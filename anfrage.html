@@ -3,106 +3,401 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>D&D Pizza-Catering – Anfrage</title>
+<title>D&D Pizza-Catering — Anfrage stellen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8f7f5; color: #1a1816; min-height: 100vh; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-.hero { background: #c0392b; padding: 2.5rem 1.5rem 3rem; text-align: center; }
-.hero-icon { font-size: 52px; margin-bottom: 0.75rem; }
-.hero h1 { color: #fff; font-size: 28px; font-weight: 700; margin-bottom: 8px; }
-.hero p { color: rgba(255,255,255,0.85); font-size: 15px; max-width: 480px; margin: 0 auto; line-height: 1.6; }
+:root {
+  --black:   #1a1209;
+  --cream:   #fdf8f0;
+  --cream2:  #f5ede0;
+  --red:     #c8341a;
+  --red-dark:#a02814;
+  --gold:    #d4a435;
+  --gold-lt: #f5e6b8;
+  --border:  #e2d5c3;
+  --text:    #2a1f14;
+  --muted:   #8a7460;
+  --radius:  6px;
+  --ff-display: 'Playfair Display', Georgia, serif;
+  --ff-body:    'Inter', system-ui, sans-serif;
+}
 
-.highlights { display: flex; justify-content: center; gap: 1.5rem; padding: 1rem 1.5rem; background: #962d22; flex-wrap: wrap; }
-.highlight { color: rgba(255,255,255,0.85); font-size: 13px; }
+body {
+  font-family: var(--ff-body);
+  background: var(--cream);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+}
 
-.container { max-width: 620px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+/* ── HERO ── */
+.hero {
+  background: var(--black);
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+}
 
-.card { background: #fff; border-radius: 10px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; border: 1px solid #e8e4df; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
-.card-title { font-size: 14px; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
-.step { background: #fdf0ee; color: #c0392b; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 50% 120%, rgba(200,52,26,0.35) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 20% 80%, rgba(212,164,53,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 80% 80%, rgba(212,164,53,0.10) 0%, transparent 60%);
+  pointer-events: none;
+}
 
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-.field { margin-bottom: 0.875rem; }
+.hero-inner {
+  position: relative; z-index: 1;
+  max-width: 700px; margin: 0 auto;
+  padding: 4rem 2rem 5rem;
+  text-align: center;
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(212,164,53,0.15);
+  border: 1px solid rgba(212,164,53,0.4);
+  color: var(--gold);
+  font-family: var(--ff-body);
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  padding: 6px 16px; border-radius: 100px;
+  margin-bottom: 1.75rem;
+}
+
+.hero h1 {
+  font-family: var(--ff-display);
+  font-size: clamp(2.4rem, 6vw, 3.6rem);
+  font-weight: 700;
+  color: var(--cream);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.hero-sub {
+  font-family: var(--ff-body);
+  font-size: 16px; font-weight: 300;
+  color: rgba(253,248,240,0.70);
+  max-width: 480px; margin: 1rem auto 0;
+  line-height: 1.7;
+}
+
+/* Ornamental divider */
+.ornament {
+  display: flex; align-items: center; justify-content: center;
+  gap: 14px; padding: 2rem 0 0;
+  color: rgba(212,164,53,0.5);
+  font-size: 13px;
+}
+.ornament-line {
+  flex: 1; max-width: 80px;
+  height: 1px; background: linear-gradient(90deg, transparent, rgba(212,164,53,0.4), transparent);
+}
+
+/* ── FEATURES STRIP ── */
+.features {
+  background: var(--black);
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding: 0;
+}
+.features-inner {
+  max-width: 700px; margin: 0 auto;
+  padding: 1.25rem 2rem;
+  display: flex; justify-content: center; gap: 2.5rem;
+  flex-wrap: wrap;
+}
+.feature {
+  display: flex; align-items: center; gap: 8px;
+  color: rgba(253,248,240,0.65);
+  font-size: 13px; font-weight: 400;
+}
+.feature-icon { font-size: 15px; }
+
+/* ── WAVE SEPARATOR ── */
+.wave {
+  background: var(--black);
+  line-height: 0;
+}
+.wave svg { display: block; width: 100%; }
+
+/* ── MAIN FORM AREA ── */
+.main {
+  max-width: 680px; margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+/* Section heading */
+.section-head {
+  text-align: center; margin-bottom: 2rem;
+}
+.section-head h2 {
+  font-family: var(--ff-display);
+  font-size: 1.75rem; font-weight: 600;
+  color: var(--text); margin-bottom: 0.4rem;
+}
+.section-head p { font-size: 14px; color: var(--muted); }
+
+/* ── CARDS ── */
+.card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 2px 8px rgba(42,31,20,0.06), 0 1px 2px rgba(42,31,20,0.04);
+}
+
+.card-label {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--ff-display);
+  font-size: 1rem; font-weight: 600;
+  color: var(--text);
+  margin-bottom: 1.1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--cream2);
+}
+.card-label-num {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--red); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-body);
+  font-size: 12px; font-weight: 600; flex-shrink: 0;
+}
+
+/* ── FORM FIELDS ── */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.field { margin-bottom: 1rem; }
 .field:last-child { margin-bottom: 0; }
-.field label { display: block; font-size: 12px; font-weight: 600; color: #5c5750; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
-.req { color: #c0392b; }
-input, select, textarea { width: 100%; padding: 10px 12px; border: 1px solid #e8e4df; border-radius: 8px; font-size: 15px; font-family: inherit; background: #fff; color: #1a1816; transition: border-color 0.15s; }
-input:focus, select:focus, textarea:focus { outline: none; border-color: #c0392b; box-shadow: 0 0 0 3px rgba(192,57,43,0.1); }
-textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
 
-.btn-submit { background: #c0392b; color: #fff; border: none; padding: 14px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; transition: background 0.15s; }
-.btn-submit:hover { background: #962d22; }
-.hint { font-size: 12px; color: #9c9690; margin-top: 10px; text-align: center; line-height: 1.6; }
+.field label {
+  display: block;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.req { color: var(--red); }
 
-.success-box { background: #edfaf2; border: 1px solid #a7f3d0; border-radius: 10px; padding: 2rem; text-align: center; display: none; }
-.success-box h2 { color: #1e8a5a; font-size: 22px; margin-bottom: 10px; }
-.success-box p { color: #2d6a4f; font-size: 14px; line-height: 1.8; }
+input[type=text],
+input[type=email],
+input[type=tel],
+input[type=number],
+input[type=date],
+input[type=time],
+select,
+textarea {
+  width: 100%;
+  padding: 10px 13px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--ff-body);
+  font-size: 14px;
+  color: var(--text);
+  background: var(--cream);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  appearance: none;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--red);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(200,52,26,0.10);
+}
+textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a7460' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 34px;
+  cursor: pointer;
+}
 
-footer { text-align: center; padding: 1.5rem; font-size: 13px; color: #9c9690; border-top: 1px solid #e8e4df; }
-footer a { color: #c0392b; text-decoration: none; }
+/* ── SUBMIT ── */
+.submit-wrap { margin-top: 1.75rem; }
 
+.btn-submit {
+  display: block; width: 100%;
+  background: var(--red);
+  color: #fff;
+  border: none;
+  padding: 15px 24px;
+  border-radius: var(--radius);
+  font-family: var(--ff-body);
+  font-size: 15px; font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+  box-shadow: 0 4px 12px rgba(200,52,26,0.30);
+}
+.btn-submit:hover { background: var(--red-dark); box-shadow: 0 6px 18px rgba(200,52,26,0.40); }
+.btn-submit:active { transform: translateY(1px); }
+
+.submit-hint {
+  text-align: center;
+  font-size: 12px; color: var(--muted);
+  margin-top: 12px; line-height: 1.7;
+}
+
+/* ── SUCCESS ── */
+.success-box {
+  display: none;
+  text-align: center;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  box-shadow: 0 2px 8px rgba(42,31,20,0.06);
+}
+.success-icon { font-size: 52px; margin-bottom: 1rem; }
+.success-box h2 {
+  font-family: var(--ff-display);
+  font-size: 1.6rem; color: var(--text);
+  margin-bottom: 0.75rem;
+}
+.success-box p { font-size: 14px; color: var(--muted); line-height: 1.8; }
+.success-contact {
+  display: inline-block;
+  margin-top: 1.5rem;
+  background: var(--cream2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 24px;
+  font-size: 13px; color: var(--text);
+  line-height: 1.8;
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--black);
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+.footer-logo {
+  font-family: var(--ff-display);
+  font-size: 1.2rem; font-weight: 600;
+  color: var(--cream);
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+footer p {
+  font-size: 12px; color: rgba(253,248,240,0.45);
+  margin-bottom: 6px;
+}
+footer a { color: var(--gold); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+
+/* ── RESPONSIVE ── */
 @media (max-width: 580px) {
   .grid2, .grid3 { grid-template-columns: 1fr; }
-  .highlights { gap: 0.75rem; }
+  .features-inner { gap: 1rem; }
+  .hero-inner { padding: 3rem 1.25rem 4rem; }
+  .main { padding: 2rem 1rem 3rem; }
 }
 </style>
 </head>
 <body>
 
-<div class="hero">
-  <div class="hero-icon">🍕</div>
-  <h1>D&D Pizza-Catering</h1>
-  <p>Lust auf echtes Pizza-Feeling bei eurem Event? Wir bringen ein Stück Italien direkt zu euch — frisch gebacken und live vor euren Gästen zubereitet.</p>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">🔥 Mobiles Pizza-Catering</div>
+    <h1>Ein Stück <em>Italia</em><br>zu eurem Event</h1>
+    <p class="hero-sub">
+      Pizza frisch gebacken, duftend und live vor euren Gästen zubereitet —
+      verschiedene Pizzasorten ganz nach euren Wünschen und Absprache.
+    </p>
+    <div class="ornament">
+      <div class="ornament-line"></div>
+      <span>🌿</span>
+      <div class="ornament-line"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<div class="features">
+  <div class="features-inner">
+    <div class="feature"><span class="feature-icon">🍕</span> Pizzasorten nach Absprache</div>
+    <div class="feature"><span class="feature-icon">👨‍🍳</span> Live-Cooking vor Ort</div>
+    <div class="feature"><span class="feature-icon">🎉</span> Jede Feier willkommen</div>
+  </div>
 </div>
 
-<div class="highlights">
-  <span class="highlight">🔥 Live-Cooking vor Ort</span>
-  <span class="highlight">🍕 4 Pizzasorten zur Wahl</span>
-  <span class="highlight">⏱ 2,5 Stunden Catering</span>
-  <span class="highlight">🚗 Anfahrt bis 20 km</span>
+<!-- WAVE -->
+<div class="wave">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" height="60" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,0 C360,60 1080,60 1440,0 L1440,60 L0,60 Z" fill="#fdf8f0"/>
+  </svg>
 </div>
 
-<div class="container">
+<!-- MAIN -->
+<main class="main">
 
-  <div id="success-box" class="success-box">
-    <h2>✅ Anfrage gesendet!</h2>
-    <p>Vielen Dank für Ihre Anfrage!<br>
-    Wir melden uns innerhalb von 48 Stunden bei Ihnen.<br><br>
-    <strong>D&D Pizza-Catering</strong><br>
-    Tel.: 0173 3064062<br>
-    dudpizza@gmx.net</p>
+  <div class="section-head">
+    <h2>Anfrage stellen</h2>
+    <p>Erzählt uns von eurem Event — wir melden uns innerhalb von 48 Stunden.</p>
   </div>
 
+  <!-- SUCCESS -->
+  <div id="success-box" class="success-box">
+    <div class="success-icon">🍕</div>
+    <h2>Grazie mille!</h2>
+    <p>Eure Anfrage ist bei uns angekommen.<br>
+    Wir melden uns innerhalb von 48 Stunden persönlich bei euch.</p>
+    <div class="success-contact">
+      <strong>D&D Pizza-Catering</strong><br>
+      Tel.: <a href="tel:01733064062">0173 3064062</a><br>
+      <a href="mailto:dudpizza@gmx.net">dudpizza@gmx.net</a>
+    </div>
+  </div>
+
+  <!-- FORM -->
   <div id="anfrage-form">
 
     <div class="card">
-      <div class="card-title"><div class="step">1</div> Ihre Kontaktdaten</div>
+      <div class="card-label">
+        <div class="card-label-num">1</div>
+        Eure Kontaktdaten
+      </div>
       <div class="grid2">
         <div class="field">
           <label>Vorname <span class="req">*</span></label>
-          <input type="text" id="f-vorname" placeholder="Max">
+          <input type="text" id="f-vorname" placeholder="Max" autocomplete="given-name">
         </div>
         <div class="field">
           <label>Nachname <span class="req">*</span></label>
-          <input type="text" id="f-nachname" placeholder="Mustermann">
+          <input type="text" id="f-nachname" placeholder="Mustermann" autocomplete="family-name">
         </div>
       </div>
       <div class="grid2">
         <div class="field">
           <label>E-Mail <span class="req">*</span></label>
-          <input type="email" id="f-email" placeholder="max@beispiel.de">
+          <input type="email" id="f-email" placeholder="max@beispiel.de" autocomplete="email">
         </div>
         <div class="field">
           <label>Telefon</label>
-          <input type="tel" id="f-tel" placeholder="+49 171 ...">
+          <input type="tel" id="f-tel" placeholder="+49 171 ..." autocomplete="tel">
         </div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-title"><div class="step">2</div> Veranstaltungsdetails</div>
+      <div class="card-label">
+        <div class="card-label-num">2</div>
+        Details zur Veranstaltung
+      </div>
       <div class="grid3">
         <div class="field">
           <label>Datum <span class="req">*</span></label>
@@ -118,7 +413,7 @@ footer a { color: #c0392b; text-decoration: none; }
         </div>
       </div>
       <div class="field">
-        <label>Veranstaltungsort / Adresse <span class="req">*</span></label>
+        <label>Veranstaltungsort <span class="req">*</span></label>
         <input type="text" id="f-ort" placeholder="Strasse, PLZ, Ort">
       </div>
       <div class="grid2">
@@ -146,53 +441,61 @@ footer a { color: #c0392b; text-decoration: none; }
         </div>
       </div>
       <div class="field">
-        <label>Wie wurden Sie auf uns aufmerksam?</label>
+        <label>Wie habt ihr von uns erfahren?</label>
         <select id="f-quelle">
           <option>Empfehlung / Bekannte</option>
           <option>Instagram / Facebook</option>
           <option>Google</option>
           <option>Flyer / Aushang</option>
-          <option>Ich kenne euch schon</option>
+          <option>Wir kennen euch schon</option>
           <option>Sonstiges</option>
         </select>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-title"><div class="step">3</div> Besondere Wuensche</div>
+      <div class="card-label">
+        <div class="card-label-num">3</div>
+        Wuensche &amp; Anmerkungen
+      </div>
       <div class="field">
-        <label>Anmerkungen / Sonderw&uuml;nsche</label>
-        <textarea id="f-anmerkungen" placeholder="Besondere Wuensche, Fragen oder alles was wir wissen sollten..."></textarea>
+        <label>Was wuenscht ihr euch? Was sollen wir wissen?</label>
+        <textarea id="f-anmerkungen" placeholder="Besondere Pizzawuensche, Unvertraeglichkeiten, Ideen fuer den Abend — alles was euch wichtig ist ..."></textarea>
       </div>
     </div>
 
-    <div class="field">
-      <button class="btn-submit" onclick="submitAnfrage()">&#9993; Anfrage jetzt absenden</button>
-      <p class="hint">Ihre Anfrage wird direkt an D&amp;D Pizza-Catering gesendet.<br>Wir melden uns innerhalb von 48 Stunden bei Ihnen.</p>
+    <div class="submit-wrap">
+      <button class="btn-submit" onclick="submitAnfrage()">
+        Anfrage absenden &nbsp;→
+      </button>
+      <p class="submit-hint">
+        Eure Anfrage geht direkt an D&D Pizza-Catering.<br>
+        Wir antworten innerhalb von 48 Stunden.
+      </p>
     </div>
 
   </div>
-</div>
+</main>
 
+<!-- FOOTER -->
 <footer>
-  <strong>D&amp;D Pizza-Catering</strong> &nbsp;&middot;&nbsp;
-  Tel.: <a href="tel:01733064062">0173 3064062</a> &nbsp;&middot;&nbsp;
-  <a href="mailto:dudpizza@gmx.net">dudpizza@gmx.net</a>
+  <div class="footer-logo">D&D Pizza-Catering</div>
+  <p>Tel.: <a href="tel:01733064062">0173 3064062</a> &nbsp;&middot;&nbsp; <a href="mailto:dudpizza@gmx.net">dudpizza@gmx.net</a></p>
 </footer>
 
 <script>
 function submitAnfrage() {
-  var vorname   = document.getElementById('f-vorname').value.trim();
-  var nachname  = document.getElementById('f-nachname').value.trim();
-  var email     = document.getElementById('f-email').value.trim();
-  var tel       = document.getElementById('f-tel').value.trim();
-  var datum     = document.getElementById('f-datum').value;
-  var uhrzeit   = document.getElementById('f-uhrzeit').value;
-  var personen  = document.getElementById('f-personen').value.trim();
-  var ort       = document.getElementById('f-ort').value.trim();
-  var art       = document.getElementById('f-art').value;
-  var location  = document.getElementById('f-location').value;
-  var quelle    = document.getElementById('f-quelle').value;
+  var vorname     = document.getElementById('f-vorname').value.trim();
+  var nachname    = document.getElementById('f-nachname').value.trim();
+  var email       = document.getElementById('f-email').value.trim();
+  var tel         = document.getElementById('f-tel').value.trim();
+  var datum       = document.getElementById('f-datum').value;
+  var uhrzeit     = document.getElementById('f-uhrzeit').value;
+  var personen    = document.getElementById('f-personen').value.trim();
+  var ort         = document.getElementById('f-ort').value.trim();
+  var art         = document.getElementById('f-art').value;
+  var location    = document.getElementById('f-location').value;
+  var quelle      = document.getElementById('f-quelle').value;
   var anmerkungen = document.getElementById('f-anmerkungen').value.trim();
 
   if (!vorname || !nachname || !email || !datum || !personen || !ort) {
@@ -200,8 +503,8 @@ function submitAnfrage() {
     return;
   }
 
-  var datumObj = new Date(datum);
-  var datumFormatted = datumObj.getDate() + '.' + (datumObj.getMonth()+1) + '.' + datumObj.getFullYear();
+  var d = new Date(datum);
+  var datumFormatted = d.getDate() + '.' + (d.getMonth()+1) + '.' + d.getFullYear();
 
   var smartBlock = '##ANFRAGE##\n'
     + 'NAME: ' + vorname + ' ' + nachname + '\n'
@@ -236,13 +539,13 @@ function submitAnfrage() {
 
   window.location.href = 'mailto:dudpizza@gmx.net'
     + '?subject=' + encodeURIComponent(subject)
-    + '&body=' + encodeURIComponent(mailBody);
+    + '&body='    + encodeURIComponent(mailBody);
 
   setTimeout(function() {
     document.getElementById('anfrage-form').style.display = 'none';
-    document.getElementById('success-box').style.display = 'block';
-    window.scrollTo(0, 0);
-  }, 1000);
+    document.getElementById('success-box').style.display  = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 900);
 }
 </script>
 </body>
