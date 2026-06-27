@@ -1,0 +1,2021 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D&D Pizza-Catering — Manager</title>
+<style>
+  :root {
+    --primary: #c0392b;
+    --primary-dark: #962d22;
+    --primary-light: #fdf0ee;
+    --accent: #e67e22;
+    --accent-light: #fef5ea;
+    --surface: #ffffff;
+    --surface-alt: #f8f7f5;
+    --border: #e8e4df;
+    --border-strong: #ccc7c0;
+    --text: #1a1816;
+    --text-secondary: #5c5750;
+    --text-muted: #9c9690;
+    --success: #1e8a5a;
+    --success-bg: #edfaf2;
+    --warning: #b45309;
+    --warning-bg: #fefce8;
+    --radius: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.06);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--surface-alt); color: var(--text); min-height: 100vh; }
+
+  /* ── TOP NAV ── */
+  header { background: var(--primary); padding: 0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+  .header-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; }
+  .logo { display: flex; align-items: center; gap: 10px; padding: 14px 0; text-decoration: none; }
+  .logo-icon { width: 34px; height: 34px; background: rgba(255,255,255,0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .logo-text { color: #fff; font-size: 16px; font-weight: 600; letter-spacing: -0.2px; }
+  .logo-sub { color: rgba(255,255,255,0.65); font-size: 11px; font-weight: 400; display: block; }
+  nav { display: flex; gap: 2px; }
+  nav button { background: transparent; border: none; color: rgba(255,255,255,0.75); padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+  nav button:hover { background: rgba(255,255,255,0.12); color: #fff; }
+  nav button.active { background: rgba(255,255,255,0.18); color: #fff; }
+  nav button .nav-num { background: rgba(255,255,255,0.25); border-radius: 50%; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
+
+  /* ── MAIN LAYOUT ── */
+  main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── PAGE HEADER ── */
+  .page-header { margin-bottom: 1.75rem; }
+  .page-header h1 { font-size: 22px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .page-header p { font-size: 14px; color: var(--text-secondary); }
+
+  /* ── CARDS ── */
+  .card { background: var(--surface); border-radius: 10px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+  .card-title .step { background: var(--primary-light); color: var(--primary); width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+
+  /* ── FORM ELEMENTS ── */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .field { margin-bottom: 0.875rem; }
+  .field:last-child { margin-bottom: 0; }
+  label.field-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
+  input[type=text], input[type=email], input[type=tel], input[type=number], input[type=date], input[type=time], select, textarea {
+    width: 100%; padding: 9px 11px; border: 1px solid var(--border); border-radius: var(--radius);
+    font-size: 14px; font-family: inherit; background: var(--surface); color: var(--text); transition: border-color 0.15s;
+  }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(192,57,43,0.1); }
+  textarea { resize: vertical; min-height: 75px; line-height: 1.5; }
+  select { cursor: pointer; }
+
+  /* ── CHECKBOXES / RADIOS ── */
+  .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .check-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
+  .check-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text); padding: 7px 10px; border-radius: var(--radius); border: 1px solid var(--border); cursor: pointer; transition: all 0.1s; }
+  .check-item:hover { border-color: var(--primary); background: var(--primary-light); }
+  .check-item input { width: 15px; height: 15px; accent-color: var(--primary); flex-shrink: 0; }
+  .check-item.checked { border-color: var(--primary); background: var(--primary-light); }
+
+  /* ── PIZZA SELECTOR ── */
+  .pizza-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .pizza-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; cursor: pointer; transition: all 0.15s; }
+  .pizza-card:hover { border-color: var(--primary); }
+  .pizza-card.selected { border-color: var(--primary); background: var(--primary-light); }
+  .pizza-card .pizza-name { font-size: 13px; font-weight: 500; color: var(--text); }
+  .pizza-card .pizza-ing { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .pizza-card .pizza-check { float: right; color: var(--primary); font-size: 16px; display: none; }
+  .pizza-card.selected .pizza-check { display: inline; }
+
+  /* ── BUTTONS ── */
+  .btn { padding: 9px 18px; border-radius: var(--radius); font-size: 14px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; display: inline-flex; align-items: center; gap: 7px; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-secondary { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
+  .btn-secondary:hover { background: var(--primary-light); }
+  .btn-ghost { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--border-strong); color: var(--text); }
+  .btn-success { background: var(--success); color: #fff; }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .actions { display: flex; gap: 8px; margin-top: 1.5rem; flex-wrap: wrap; }
+
+  /* ── BADGES & TAGS ── */
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 100px; font-size: 11px; font-weight: 600; }
+  .badge-red { background: var(--primary-light); color: var(--primary); }
+  .badge-green { background: var(--success-bg); color: var(--success); }
+  .badge-amber { background: var(--warning-bg); color: var(--warning); }
+
+  /* ── ALERTS ── */
+  .alert { padding: 10px 14px; border-radius: var(--radius); font-size: 13px; margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 8px; }
+  .alert-warning { background: var(--warning-bg); color: var(--warning); border: 1px solid #fde68a; }
+  .alert-success { background: var(--success-bg); color: var(--success); border: 1px solid #a7f3d0; }
+  .alert-info { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+
+  /* ── DIVIDER ── */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
+
+  /* ── SHOPPING LIST ── */
+  .shop-category { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin: 1rem 0 0.5rem; }
+  .shop-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .shop-row:last-child { border-bottom: none; }
+  .shop-qty { font-weight: 600; color: var(--primary); font-size: 14px; }
+  .shop-hint { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+  /* ── INVOICE ── */
+  .invoice-preview { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 2rem; box-shadow: var(--shadow); }
+  .inv-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
+  .inv-company { }
+  .inv-company-name { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .inv-company-detail { font-size: 12px; color: var(--text-muted); line-height: 1.7; }
+  .inv-logo { max-height: 60px; max-width: 140px; object-fit: contain; }
+  .inv-right { text-align: right; }
+  .inv-title { font-size: 26px; font-weight: 700; color: var(--primary); letter-spacing: -0.5px; }
+  .inv-meta { font-size: 12px; color: var(--text-secondary); margin-top: 6px; line-height: 1.8; }
+  .inv-customer { font-size: 13px; margin-bottom: 1.25rem; color: var(--text-secondary); }
+  .inv-customer strong { display: block; color: var(--text); font-size: 14px; margin-bottom: 4px; }
+  table.inv-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .inv-table th { background: var(--surface-alt); padding: 8px 12px; text-align: left; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .inv-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+  .inv-table .td-right { text-align: right; white-space: nowrap; }
+  .inv-totals { margin-top: 1rem; margin-left: auto; width: 240px; }
+  .inv-total-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13px; color: var(--text-secondary); }
+  .inv-total-row.final { border-top: 2px solid var(--text); margin-top: 6px; padding-top: 10px; font-size: 16px; font-weight: 700; color: var(--text); }
+  .inv-footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-muted); line-height: 1.8; }
+
+  /* ── LOGO UPLOAD ── */
+  .logo-upload { border: 2px dashed var(--border); border-radius: var(--radius); padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.15s; position: relative; }
+  .logo-upload:hover { border-color: var(--primary); background: var(--primary-light); }
+  .logo-upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .logo-upload-text { font-size: 13px; color: var(--text-muted); }
+  .logo-preview-wrap { display: flex; align-items: center; gap: 12px; }
+  .logo-preview-img { max-height: 60px; max-width: 120px; object-fit: contain; border-radius: 4px; border: 1px solid var(--border); }
+
+  /* ── COUNTER WIDGET ── */
+  .counter { display: flex; align-items: center; gap: 10px; }
+  .counter button { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; color: var(--text); font-weight: 500; }
+  .counter button:hover { border-color: var(--primary); color: var(--primary); }
+  .counter .count { min-width: 30px; text-align: center; font-size: 16px; font-weight: 600; }
+
+  /* ── SUMMARY SIDEBAR ── */
+  .layout-sidebar { display: grid; grid-template-columns: 1fr 360px; gap: 1.5rem; align-items: start; }
+
+  /* ── PROGRESS INDICATOR ── */
+  .progress-bar { display: flex; gap: 6px; margin-bottom: 1.5rem; }
+  .progress-step { flex: 1; height: 4px; border-radius: 100px; background: var(--border); }
+  .progress-step.done { background: var(--primary); }
+
+  /* ── STATUS PILL ── */
+  .status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 100px; font-size: 12px; font-weight: 600; }
+
+  /* ── MAIL PREVIEW ── */
+  .mail-preview { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .mail-header { background: var(--surface-alt); padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  .mail-header p { font-size: 12px; color: var(--text-secondary); margin-bottom: 2px; }
+  .mail-header strong { font-size: 13px; color: var(--text); }
+  .mail-body { padding: 16px; font-size: 13px; line-height: 1.7; color: var(--text); }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+    .pizza-grid { grid-template-columns: 1fr 1fr; }
+    .check-grid { grid-template-columns: 1fr; }
+    nav button span.nav-label { display: none; }
+    .layout-sidebar { grid-template-columns: 1fr; }
+    main { padding: 1rem; }
+    .header-inner { padding: 0 1rem; }
+    nav { gap: 0; }
+    nav button { padding: 10px 10px; }
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    header, nav, .actions, #toast,
+    #smart-paste-input, #paste-result, #paste-error,
+    .btn, .btn-primary, .btn-secondary, .btn-ghost,
+    .alert-info { display: none !important; }
+
+    body { background: #fff !important; }
+    main { padding: 0 !important; max-width: 100% !important; }
+
+    /* Alle Sections ausblenden ausser der aktiven */
+    .section { display: none !important; }
+    .section.active { display: block !important; }
+
+    /* Alle Cards im aktiven Bereich anzeigen */
+    .section.active .card { display: block !important; box-shadow: none !important; border: 1px solid #ccc !important; margin-bottom: 0.75rem !important; break-inside: avoid; }
+
+    /* Rechnung / Angebot Vorschau */
+    .invoice-preview { box-shadow: none !important; border: 1px solid #ccc !important; }
+    .layout-sidebar { grid-template-columns: 1fr !important; }
+
+    /* Seitenumbruch vermeiden */
+    .card { page-break-inside: avoid; }
+
+    /* Farben für Druck */
+    .card-title .step { background: #fdf0ee !important; color: #c0392b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .check-item.checked { background: #fdf0ee !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+    /* Checkboxen sichtbar machen */
+    input[type=checkbox] { width: 12px !important; height: 12px !important; }
+
+    /* Eingabefelder lesbar */
+    input, select, textarea { border: none !important; border-bottom: 1px solid #aaa !important; border-radius: 0 !important; padding: 2px 0 !important; font-size: 13px !important; background: transparent !important; }
+  }
+
+  /* ── EINKAUFSLISTE EINGABE ── */
+  .shop-input-row { display:grid; grid-template-columns:1fr 80px 110px 80px 28px; gap:6px; align-items:center; padding:5px 0; border-bottom:0.5px solid var(--border); }
+  .shop-input-row:last-child { border-bottom:none; }
+  .shop-input-name input { font-size:13px; padding:5px 8px; }
+  .shop-input-menge input { font-size:13px; padding:5px 8px; text-align:right; }
+  .shop-input-einheit select { font-size:12px; padding:5px 4px; }
+  .shop-input-result { font-size:13px; font-weight:600; color:var(--primary); text-align:right; white-space:nowrap; }
+  .shop-del-btn { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:14px; padding:2px; border-radius:4px; }
+  .shop-del-btn:hover { color:var(--primary); background:var(--primary-light); }
+  @media(max-width:768px){ .shop-input-row { grid-template-columns:1fr 60px 90px 60px 24px; } }
+
+  /* ── TOAST ── */
+  #toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--text); color: #fff; padding: 12px 18px; border-radius: var(--radius); font-size: 13px; font-weight: 500; z-index: 9999; transform: translateY(100px); opacity: 0; transition: all 0.3s; pointer-events: none; box-shadow: var(--shadow); }
+  #toast.show { transform: translateY(0); opacity: 1; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="logo" href="#">
+      <div class="logo-icon">🍕</div>
+      <div class="logo-text">
+        D&D Pizza-Catering
+        <span class="logo-sub">Verwaltung & Planung</span>
+      </div>
+    </a>
+    <nav id="main-nav">
+      <button class="active" onclick="showSection('anfrage', this)">
+        <div class="nav-num">1</div>
+        <span class="nav-label">Anfrage</span>
+      </button>
+      <button onclick="showSection('detailbogen', this)">
+        <div class="nav-num">2</div>
+        <span class="nav-label">Detailbogen</span>
+      </button>
+      <button onclick="showSection('angebot', this)">
+        <div class="nav-num">3</div>
+        <span class="nav-label">Angebot</span>
+      </button>
+      <button onclick="showSection('einkauf', this)">
+        <div class="nav-num">4</div>
+        <span class="nav-label">Einkaufsliste</span>
+      </button>
+      <button onclick="showSection('rechnung', this)">
+        <div class="nav-num">5</div>
+        <span class="nav-label">Rechnung</span>
+      </button>
+      <button onclick="showSection('einstellungen', this)">
+        ⚙ <span class="nav-label">Einstellungen</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ═══════════════════════════════════════════
+     MODUL 1: POSTEINGANG / SMART PASTE
+═══════════════════════════════════════════ -->
+<div id="anfrage" class="section active">
+  <div class="page-header">
+    <h1>📬 Posteingang — Anfrage einlesen</h1>
+    <p>Neue Anfrage per Mail erhalten? Mail-Text kopieren, hier einfügen — alle Felder werden automatisch befüllt.</p>
+  </div>
+
+  <div class="alert alert-info">
+    <span>ℹ️</span>
+    <div>
+      <strong>So geht's:</strong> Öffne die Anfrage-Mail in GMX → markiere den gesamten Mail-Text (Strg+A) → kopiere ihn (Strg+C) → füge ihn unten ein → klicke „Daten einlesen".
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Mail-Text einfügen</div>
+    <div class="field">
+      <label class="field-label">Kopierten Mail-Text hier einfügen</label>
+      <textarea id="smart-paste-input" rows="10" placeholder="Strg+V — Mail-Text hier einfügen...&#10;&#10;Der Text muss den ##ANFRAGE##-Block enthalten, der automatisch mit jeder Anfrage mitgesendet wird."></textarea>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" onclick="smartPaste()">⚡ Daten automatisch einlesen</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('smart-paste-input').value=''; clearAnfrageFields()">✕ Leeren</button>
+    </div>
+    <div id="paste-result" style="display:none; margin-top:1rem;" class="alert alert-success">
+      ✅ Daten erfolgreich eingelesen! Alle Felder sind jetzt befüllt.
+    </div>
+    <div id="paste-error" style="display:none; margin-top:1rem;" class="alert alert-warning">
+      ⚠️ Kein gültiger Anfrage-Block gefunden. Bitte den vollständigen Mail-Text einfügen.
+    </div>
+  </div>
+
+  <div class="card" id="parsed-data-card" style="display:none;">
+    <div class="card-title">✅ Eingelesene Kundendaten</div>
+    <div class="grid2">
+      <div class="field"><label class="field-label">Name</label><input type="text" id="a-vorname" placeholder="—" readonly style="background:var(--surface-alt);"></div>
+      <div class="field"><label class="field-label">E-Mail</label><input type="email" id="a-email" placeholder="—" readonly style="background:var(--surface-alt);"></div>
+    </div>
+    <div class="grid3">
+      <div class="field"><label class="field-label">Telefon</label><input type="text" id="a-tel" placeholder="—" readonly style="background:var(--surface-alt);"></div>
+      <div class="field"><label class="field-label">Datum</label><input type="date" id="a-datum" readonly style="background:var(--surface-alt);"></div>
+      <div class="field"><label class="field-label">Uhrzeit</label><input type="time" id="a-uhrzeit" readonly style="background:var(--surface-alt);"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label class="field-label">Personenanzahl</label><input type="number" id="a-personen" placeholder="—" readonly style="background:var(--surface-alt);"></div>
+      <div class="field"><label class="field-label">Art der Veranstaltung</label><input type="text" id="a-art" placeholder="—" readonly style="background:var(--surface-alt);"></div>
+    </div>
+    <div class="field"><label class="field-label">Ort</label><input type="text" id="a-ort" placeholder="—" readonly style="background:var(--surface-alt);"></div>
+    <div class="grid2">
+      <div class="field"><label class="field-label">Drinnen / Draußen</label><input type="text" id="a-location" placeholder="—" readonly style="background:var(--surface-alt);"></div>
+      <div class="field"><label class="field-label">Quelle</label><input type="text" id="a-quelle" placeholder="—" readonly style="background:var(--surface-alt);"></div>
+    </div>
+    <div class="field"><label class="field-label">Anmerkungen</label><textarea id="a-anmerkungen" rows="2" readonly style="background:var(--surface-alt);"></textarea></div>
+    <div class="actions" style="margin-top:1.25rem;">
+      <button class="btn btn-primary" onclick="transferToModules()">→ Daten in alle Module übertragen</button>
+      <button class="btn btn-secondary" onclick="buildAndShowConfirmMail()">✉️ Bestätigung an Kunden vorbereiten</button>
+    </div>
+  </div>
+
+  <div class="card" id="confirm-mail-card" style="display:none; margin-top:1rem;">
+    <div class="card-title">📧 Bestätigungs-Mail an Kunden (Vorschau)</div>
+    <div class="mail-preview">
+      <div class="mail-header">
+        <p>Von: <strong>dudpizza@gmx.net</strong></p>
+        <p>An: <strong id="mail-to-preview">—</strong></p>
+        <p>Betreff: <strong id="mail-subject-preview">—</strong></p>
+      </div>
+      <div class="mail-body" id="mail-body-preview" style="white-space:pre-wrap; font-size:13px;"></div>
+    </div>
+    <div class="actions" style="margin-top:1rem;">
+      <button class="btn btn-primary" onclick="openConfirmMail()">✉️ Mail öffnen &amp; senden</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MODUL 2: DETAILBOGEN
+═══════════════════════════════════════════ -->
+<div id="detailbogen" class="section">
+  <div class="page-header">
+    <h1>📝 Detailbogen</h1>
+    <p>Interne Checkliste für das Kundengespräch — alle Details für eine reibungslose Veranstaltung.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="step">1</div> Erstangaben bestätigen</div>
+    <div class="grid3">
+      <div class="field"><label class="field-label">Datum (bestätigt)</label><input type="date" id="d-datum"></div>
+      <div class="field"><label class="field-label">Uhrzeit Beginn</label><input type="time" id="d-uhrzeit" value="18:00"></div>
+      <div class="field"><label class="field-label">Aufbau ab</label><input type="time" id="d-aufbau" value="15:00"></div>
+    </div>
+    <div class="grid3">
+      <div class="field"><label class="field-label">Personenanzahl (final)</label><input type="number" id="d-personen" placeholder="50"></div>
+      <div class="field"><label class="field-label">Abbau bis</label><input type="time" id="d-abbau" value="23:00"></div>
+      <div class="field"><label class="field-label">Fahrtzeit (Minuten)</label><input type="number" id="d-fahrtzeit" placeholder="20"></div>
+    </div>
+    <div class="field"><label class="field-label">Vollständige Adresse</label><input type="text" id="d-adresse" placeholder="Straße, PLZ, Ort — inkl. Hinweise zur Zufahrt"></div>
+    <div class="field"><label class="field-label">Ansprechpartner vor Ort (Name + Handy)</label><input type="text" id="d-ansprechpartner" placeholder="Maria Müller, +49 171 ..."></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="step">2</div> Pizzaauswahl (max. 5 Sorten)</div>
+    <p style="font-size:12px; color:var(--text-muted); margin-bottom:1rem;">Klicke auf die gewünschten Sorten — maximal 5 auswählbar</p>
+    <div class="pizza-grid" id="pizza-grid">
+      <div class="pizza-card" onclick="togglePizza(this, 'Margherita')">
+        <span class="pizza-check">✓</span>
+        <div class="pizza-name">Margherita</div>
+        <div class="pizza-ing">Tomate, Mozzarella, Basilikum</div>
+      </div>
+      <div class="pizza-card" onclick="togglePizza(this, 'Salame')">
+        <span class="pizza-check">✓</span>
+        <div class="pizza-name">Salame</div>
+        <div class="pizza-ing">Tomate, Mozzarella, Salami</div>
+      </div>
+      <div class="pizza-card" onclick="togglePizza(this, 'Prosciutto')">
+        <span class="pizza-check">✓</span>
+        <div class="pizza-name">Prosciutto</div>
+        <div class="pizza-ing">Tomate, Mozzarella, Kochschinken</div>
+      </div>
+      <div class="pizza-card" onclick="togglePizza(this, 'Gorgonzola')">
+        <span class="pizza-check">✓</span>
+        <div class="pizza-name">Gorgonzola</div>
+        <div class="pizza-ing">Tomate, Mozzarella, Gorgonzola, Walnuss</div>
+      </div>
+      <div class="pizza-card" onclick="togglePizza(this, 'Verdure')">
+        <span class="pizza-check">✓</span>
+        <div class="pizza-name">Verdure</div>
+        <div class="pizza-ing">Tomate, Mozzarella, Paprika, Zucchini, Aubergine</div>
+      </div>
+      <div class="pizza-card" onclick="togglePizza(this, 'Tonno')">
+        <span class="pizza-check">✓</span>
+        <div class="pizza-name">Tonno</div>
+        <div class="pizza-ing">Tomate, Mozzarella, Thunfisch, Zwiebeln</div>
+      </div>
+      <div class="pizza-card" onclick="togglePizza(this, 'Salame Piccante')">
+        <span class="pizza-check">✓</span>
+        <div class="pizza-name">Salame Piccante 🌶</div>
+        <div class="pizza-ing">Tomate, Mozzarella, scharfe Salami, Chili</div>
+      </div>
+      <div class="pizza-card" onclick="togglePizza(this, 'Marinara')">
+        <span class="pizza-check">✓</span>
+        <div class="pizza-name">Marinara</div>
+        <div class="pizza-ing">Tomate, Knoblauch, Oregano (vegan)</div>
+      </div>
+      <div class="pizza-card" onclick="togglePizza(this, 'Pizza Dolce')">
+        <span class="pizza-check">✓</span>
+        <div class="pizza-name">Pizza Dolce 🍫</div>
+        <div class="pizza-ing">Nutella, Banane, Puderzucker</div>
+      </div>
+    </div>
+    <div id="pizza-warn" class="alert alert-warning" style="margin-top:1rem; display:none;">
+      ⚠️ Maximal 5 Sorten wählbar — bitte eine Sorte abwählen.
+    </div>
+    <div id="pizza-selected" style="margin-top:0.75rem; font-size:13px; color:var(--text-secondary);">Noch keine Sorten gewählt.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="step">3</div> Besondere Toppings & Extras</div>
+    <div class="check-grid">
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Oliven</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Kapern</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Chiliöl</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Parmesancreme</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Kräuteröl</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Rucola (nach Backen)</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Büffelmozzarella</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Trüffelöl</label>
+    </div>
+    <div class="field" style="margin-top:0.75rem;"><label class="field-label">Weitere Toppings / Sonderwünsche</label>
+      <input type="text" placeholder="z.B. Jalapeños, sonnengetrocknete Tomaten...">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="step">4</div> Strom & Technik</div>
+    <div class="alert alert-warning" style="margin-bottom:1rem;">
+      ⚡ Wichtig: Es werden <strong>2 separate Stromkreise</strong> benötigt (je 16A / 230V). Nicht an derselben Sicherung!
+    </div>
+    <div class="check-grid">
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Stromkreis 1 vorhanden ✓</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Stromkreis 2 vorhanden ✓</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Absicherung geprüft</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Verlängerungskabel nötig</label>
+    </div>
+    <div class="grid2" style="margin-top:0.75rem;">
+      <div class="field"><label class="field-label">Entfernung Steckdose → Standort</label><input type="text" placeholder="ca. 10 m"></div>
+      <div class="field"><label class="field-label">Kabel vorhanden bis (Meter)</label><input type="number" placeholder="25"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="step">5</div> Location & Aufbau</div>
+    <div class="grid2">
+      <div class="field"><label class="field-label">Drinnen / Draußen</label>
+        <select><option>Draußen</option><option>Drinnen</option><option>Beides</option></select>
+      </div>
+      <div class="field"><label class="field-label">Untergrund</label>
+        <select><option>Asphalt / Pflaster</option><option>Rasen</option><option>Schotter</option><option>Fliesen</option><option>Parkett / Holzboden</option></select>
+      </div>
+      <div class="field"><label class="field-label">Anfahrt mit Fahrzeug bis Standort?</label>
+        <select><option>Ja, direkt möglich</option><option>Ja, mit Einschränkungen</option><option>Nein — Material tragen</option></select>
+      </div>
+      <div class="field"><label class="field-label">Stellplatz für Anhänger?</label>
+        <select><option>Ja, vorhanden</option><option>Nein</option><option>Klärung nötig</option></select>
+      </div>
+    </div>
+    <div class="field"><label class="field-label">Verfügbare Fläche (ca.)</label><input type="text" placeholder="z.B. 4 × 6 m — oder: ausreichend Platz vorhanden"></div>
+    <div class="check-grid" style="margin-top:0.5rem;">
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Überdachung vorhanden</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Zelt / Pavillon geplant</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Wasseranschluss in Nähe</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Beleuchtung vorhanden</label>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="step">6</div> Service & Ausstattung</div>
+    <div class="grid3">
+      <div class="field"><label class="field-label">Tische vorhanden?</label>
+        <select><option>Ja, vorhanden</option><option>Nein — bringe eigene mit</option><option>Teilweise</option></select>
+      </div>
+      <div class="field"><label class="field-label">Anzahl Tische</label><input type="number" placeholder="5"></div>
+      <div class="field"><label class="field-label">Stühle vorhanden?</label>
+        <select><option>Ja</option><option>Nein</option><option>Teilweise</option></select>
+      </div>
+    </div>
+    <div class="check-grid">
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Servietten (Kunde stellt)</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Servietten (bringe mit)</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Pappteller / Einwegteller</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Pizzaschneider (eigener)</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Getränke (Kunde organisiert)</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Müllsäcke vor Ort</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Aufbewahrung für Zutaten</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Handwaschgelegenheit</label>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="step">7</div> Allergien & Ernährungsbedürfnisse</div>
+    <div class="alert alert-info" style="margin-bottom:1rem; font-size:12px;">
+      ℹ️ Vegane, laktose- oder glutenfreie Pizzen sind nach Rücksprache möglich.
+    </div>
+    <div class="check-grid cols3">
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Glutenunverträglichkeit</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Laktoseintoleranz</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Vegetarisch</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Vegan</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Halal</label>
+      <label class="check-item"><input type="checkbox" onchange="toggleCheckStyle(this)"> Nussallergie</label>
+    </div>
+    <div class="field" style="margin-top:0.75rem;"><label class="field-label">Weitere Hinweise</label>
+      <textarea placeholder="Anzahl betroffener Personen, Schwere der Unverträglichkeit, Sonderpizzen nötig?"></textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="step">8</div> Absprachen & Logistik</div>
+    <div class="grid3">
+      <div class="field"><label class="field-label">Angebotspreis (€)</label><input type="number" id="d-preis" placeholder="750"></div>
+      <div class="field"><label class="field-label">Anzahlung (€)</label><input type="number" id="d-anzahlung" placeholder="100"></div>
+      <div class="field"><label class="field-label">Anzahlung erhalten?</label>
+        <select id="d-anzahlung-status"><option>Nein</option><option>Ja, erhalten</option><option>Ausstehend</option></select>
+      </div>
+    </div>
+    <div class="field"><label class="field-label">Interne Notizen (nicht für Kunden)</label>
+      <textarea placeholder="Besonderheiten, Hinweise für den Tag, offene Punkte..."></textarea>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="sendDetailbogenMail()">✉️ Detailbogen per Mail senden</button>
+    <button class="btn btn-ghost" onclick="window.print()">🖨️ Drucken / PDF</button>
+    <button class="btn btn-secondary" onclick="showSection('einkauf', document.querySelectorAll('#main-nav button')[3])">
+      → Zur Einkaufsliste
+    </button>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     MODUL 3: EINKAUFSLISTE
+═══════════════════════════════════════════ -->
+<div id="einkauf" class="section">
+  <div class="page-header">
+    <h1>🛒 Einkaufsliste</h1>
+    <p>Eigene Mengenangaben pro Pizza eintragen — die Gesamtmengen werden automatisch berechnet.</p>
+  </div>
+
+  <div class="layout-sidebar">
+    <div>
+
+      <!-- GRUNDDATEN -->
+      <div class="card">
+        <div class="card-title"><div class="step">1</div> Grunddaten</div>
+        <div class="grid3">
+          <div class="field"><label class="field-label">Personen</label>
+            <input type="number" id="s-personen" value="50" min="1" oninput="calcShopping()">
+          </div>
+          <div class="field"><label class="field-label">Pizzen pro Person</label>
+            <input type="number" id="s-pp" value="2.5" step="0.5" min="0.5" oninput="calcShopping()">
+          </div>
+          <div class="field"><label class="field-label">Anzahl Sorten</label>
+            <input type="number" id="s-sorten" value="4" min="1" max="5" oninput="calcShopping()">
+          </div>
+        </div>
+        <div class="field"><label class="field-label">Puffer / Reserve (%)</label>
+          <select id="s-puffer" onchange="calcShopping()">
+            <option value="0">Kein Puffer</option>
+            <option value="10" selected>+10 % Sicherheit</option>
+            <option value="15">+15 % Sicherheit</option>
+            <option value="20">+20 % Sicherheit</option>
+          </select>
+        </div>
+        <div class="alert alert-info" style="font-size:12px; margin-top:0.5rem;">
+          Alle Mengenfelder unten sind frei eingebbar — trage deine eigenen Erfahrungswerte ein.
+        </div>
+      </div>
+
+      <!-- TEIG -->
+      <div class="card">
+        <div class="card-title">🌾 Teig & Basis <span style="font-size:11px; font-weight:400; color:var(--text-muted); margin-left:8px;">Menge pro Pizza eingeben</span></div>
+        <div id="teig-rows">
+          <div class="shop-input-row">
+            <div class="shop-input-name"><input type="text" value="Mehl Tipo 00" oninput="calcShopping()"></div>
+            <div class="shop-input-menge"><input type="number" class="zutat-menge" value="250" min="0" oninput="calcShopping()"></div>
+            <div class="shop-input-einheit">
+              <select class="zutat-einheit" onchange="calcShopping()">
+                <option value="g" selected>g / Pizza</option>
+                <option value="ml">ml / Pizza</option>
+                <option value="stk">Stk / Pizza</option>
+              </select>
+            </div>
+            <div class="shop-input-result" id="res-teig-0">—</div>
+            <button class="shop-del-btn" onclick="deleteRow(this)">✕</button>
+          </div>
+          <div class="shop-input-row">
+            <div class="shop-input-name"><input type="text" value="Wasser (lauwarm)" oninput="calcShopping()"></div>
+            <div class="shop-input-menge"><input type="number" class="zutat-menge" value="160" min="0" oninput="calcShopping()"></div>
+            <div class="shop-input-einheit"><select class="zutat-einheit" onchange="calcShopping()"><option value="g">g / Pizza</option><option value="ml" selected>ml / Pizza</option><option value="stk">Stk / Pizza</option></select></div>
+            <div class="shop-input-result" id="res-teig-1">—</div>
+            <button class="shop-del-btn" onclick="deleteRow(this)">✕</button>
+          </div>
+          <div class="shop-input-row">
+            <div class="shop-input-name"><input type="text" value="Frischhefe" oninput="calcShopping()"></div>
+            <div class="shop-input-menge"><input type="number" class="zutat-menge" value="3" min="0" oninput="calcShopping()"></div>
+            <div class="shop-input-einheit"><select class="zutat-einheit" onchange="calcShopping()"><option value="g" selected>g / Pizza</option><option value="ml">ml / Pizza</option><option value="stk">Stk / Pizza</option></select></div>
+            <div class="shop-input-result" id="res-teig-2">—</div>
+            <button class="shop-del-btn" onclick="deleteRow(this)">✕</button>
+          </div>
+          <div class="shop-input-row">
+            <div class="shop-input-name"><input type="text" value="Salz" oninput="calcShopping()"></div>
+            <div class="shop-input-menge"><input type="number" class="zutat-menge" value="7" min="0" oninput="calcShopping()"></div>
+            <div class="shop-input-einheit"><select class="zutat-einheit" onchange="calcShopping()"><option value="g" selected>g / Pizza</option><option value="ml">ml / Pizza</option><option value="stk">Stk / Pizza</option></select></div>
+            <div class="shop-input-result" id="res-teig-3">—</div>
+            <button class="shop-del-btn" onclick="deleteRow(this)">✕</button>
+          </div>
+          <div class="shop-input-row">
+            <div class="shop-input-name"><input type="text" value="Olivenöl (Teig)" oninput="calcShopping()"></div>
+            <div class="shop-input-menge"><input type="number" class="zutat-menge" value="10" min="0" oninput="calcShopping()"></div>
+            <div class="shop-input-einheit"><select class="zutat-einheit" onchange="calcShopping()"><option value="g">g / Pizza</option><option value="ml" selected>ml / Pizza</option><option value="stk">Stk / Pizza</option></select></div>
+            <div class="shop-input-result" id="res-teig-4">—</div>
+            <button class="shop-del-btn" onclick="deleteRow(this)">✕</button>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm" style="margin-top:0.75rem;" onclick="addRow('teig-rows')">+ Zeile hinzufügen</button>
+      </div>
+
+      <!-- SAUCE & KÄSE -->
+      <div class="card">
+        <div class="card-title">🍅 Sauce & Käse <span style="font-size:11px; font-weight:400; color:var(--text-muted); margin-left:8px;">Menge pro Pizza eingeben</span></div>
+        <div id="sauce-rows">
+          <div class="shop-input-row">
+            <div class="shop-input-name"><input type="text" value="Tomatensauce (San Marzano)" oninput="calcShopping()"></div>
+            <div class="shop-input-menge"><input type="number" class="zutat-menge" value="80" min="0" oninput="calcShopping()"></div>
+            <div class="shop-input-einheit"><select class="zutat-einheit" onchange="calcShopping()"><option value="g">g / Pizza</option><option value="ml" selected>ml / Pizza</option><option value="stk">Stk / Pizza</option></select></div>
+            <div class="shop-input-result">—</div>
+            <button class="shop-del-btn" onclick="deleteRow(this)">✕</button>
+          </div>
+          <div class="shop-input-row">
+            <div class="shop-input-name"><input type="text" value="Mozzarella gerieben" oninput="calcShopping()"></div>
+            <div class="shop-input-menge"><input type="number" class="zutat-menge" value="120" min="0" oninput="calcShopping()"></div>
+            <div class="shop-input-einheit"><select class="zutat-einheit" onchange="calcShopping()"><option value="g" selected>g / Pizza</option><option value="ml">ml / Pizza</option><option value="stk">Stk / Pizza</option></select></div>
+            <div class="shop-input-result">—</div>
+            <button class="shop-del-btn" onclick="deleteRow(this)">✕</button>
+          </div>
+          <div class="shop-input-row">
+            <div class="shop-input-name"><input type="text" value="Mozzarella Kugeln (frisch)" oninput="calcShopping()"></div>
+            <div class="shop-input-menge"><input type="number" class="zutat-menge" value="0.3" step="0.1" min="0" oninput="calcShopping()"></div>
+            <div class="shop-input-einheit"><select class="zutat-einheit" onchange="calcShopping()"><option value="g">g / Pizza</option><option value="ml">ml / Pizza</option><option value="stk" selected>Stk / Pizza</option></select></div>
+            <div class="shop-input-result">—</div>
+            <button class="shop-del-btn" onclick="deleteRow(this)">✕</button>
+          </div>
+          <div class="shop-input-row">
+            <div class="shop-input-name"><input type="text" value="Basilikum (frisch)" oninput="calcShopping()"></div>
+            <div class="shop-input-menge"><input type="number" class="zutat-menge" value="0.1" step="0.05" min="0" oninput="calcShopping()"></div>
+            <div class="shop-input-einheit"><select class="zutat-einheit" onchange="calcShopping()"><option value="g">g / Pizza</option><option value="ml">ml / Pizza</option><option value="stk" selected>Stk / Pizza</option></select></div>
+            <div class="shop-input-result">—</div>
+            <button class="shop-del-btn" onclick="deleteRow(this)">✕</button>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm" style="margin-top:0.75rem;" onclick="addRow('sauce-rows')">+ Zeile hinzufügen</button>
+      </div>
+
+      <!-- BELÄGE -->
+      <div class="card">
+        <div class="card-title">🥩 Beläge <span style="font-size:11px; font-weight:400; color:var(--text-muted); margin-left:8px;">Menge pro Pizza (wird durch Sortenanzahl aufgeteilt)</span></div>
+        <div id="belag-rows">
+          <div class="shop-input-row">
+            <div class="shop-input-name"><input type="text" value="Salame" oninput="calcShopping()"></div>
+            <div class="shop-input-menge"><input type="number" class="zutat-menge belag-menge" value="60" min="0" oninput="calcShopping()"></div>
+            <div class="shop-input-einheit"><select class="zutat-einheit" onchange="calcShopping()"><option value="g" selected>g / Pizza</option><option value="ml">ml / Pizza</option><option value="stk">Stk / Pizza</option></select></div>
+            <div class="shop-input-result">—</div>
+            <button class="shop-del-btn" onclick="deleteRow(this)">✕</button>
+          </div>
+          <div class="shop-input-row">
+            <div class="shop-input-name"><input type="text" value="Prosciutto" oninput="calcShopping()"></div>
+            <div class="shop-input-menge"><input type="number" class="zutat-menge belag-menge" value="80" min="0" oninput="calcShopping()"></div>
+            <div class="shop-input-einheit"><select class="zutat-einheit" onchange="calcShopping()"><option value="g" selected>g / Pizza</option><option value="ml">ml / Pizza</option><option value="stk">Stk / Pizza</option></select></div>
+            <div class="shop-input-result">—</div>
+            <button class="shop-del-btn" onclick="deleteRow(this)">✕</button>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm" style="margin-top:0.75rem;" onclick="addRow('belag-rows', true)">+ Belag hinzufügen</button>
+      </div>
+
+      <!-- VERBRAUCHSMATERIAL -->
+      <div class="card">
+        <div class="card-title">📦 Verbrauchsmaterial <span style="font-size:11px; font-weight:400; color:var(--text-muted); margin-left:8px;">Menge pro Pizza oder Festmenge</span></div>
+        <div id="material-rows">
+          <div class="shop-input-row">
+            <div class="shop-input-name"><input type="text" value="Pappteller" oninput="calcShopping()"></div>
+            <div class="shop-input-menge"><input type="number" class="zutat-menge" value="1" min="0" oninput="calcShopping()"></div>
+            <div class="shop-input-einheit"><select class="zutat-einheit" onchange="calcShopping()"><option value="g">g / Pizza</option><option value="ml">ml / Pizza</option><option value="stk" selected>Stk / Pizza</option></select></div>
+            <div class="shop-input-result">—</div>
+            <button class="shop-del-btn" onclick="deleteRow(this)">✕</button>
+          </div>
+          <div class="shop-input-row">
+            <div class="shop-input-name"><input type="text" value="Servietten" oninput="calcShopping()"></div>
+            <div class="shop-input-menge"><input type="number" class="zutat-menge" value="4" min="0" oninput="calcShopping()"></div>
+            <div class="shop-input-einheit"><select class="zutat-einheit" onchange="calcShopping()"><option value="g">g / Pizza</option><option value="ml">ml / Pizza</option><option value="stk" selected>Stk / Person</option></select></div>
+            <div class="shop-input-result">—</div>
+            <button class="shop-del-btn" onclick="deleteRow(this)">✕</button>
+          </div>
+          <div class="shop-input-row">
+            <div class="shop-input-name"><input type="text" value="Backpapier / Semolina" oninput="calcShopping()"></div>
+            <div class="shop-input-menge"><input type="number" class="zutat-menge" value="0" min="0" oninput="calcShopping()"></div>
+            <div class="shop-input-einheit"><select class="zutat-einheit" onchange="calcShopping()"><option value="g">g / Pizza</option><option value="ml">ml / Pizza</option><option value="stk" selected>Stk / Pizza</option></select></div>
+            <div class="shop-input-result">1 Paket</div>
+            <button class="shop-del-btn" onclick="deleteRow(this)">✕</button>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm" style="margin-top:0.75rem;" onclick="addRow('material-rows')">+ Zeile hinzufügen</button>
+      </div>
+
+      <!-- FREITEXT -->
+      <div class="card">
+        <div class="card-title">📝 Zusätzliche Notizen / Freitext</div>
+        <div class="field">
+          <textarea id="s-freitext" rows="5" placeholder="z.B. Olivenöl zum Servieren (2 Flaschen)&#10;Alufolie für Reste&#10;Anzünder für den Ofen&#10;..." oninput="calcShopping()"></textarea>
+        </div>
+        <p style="font-size:12px; color:var(--text-muted);">Dieser Text erscheint am Ende der gedruckten und versendeten Einkaufsliste.</p>
+      </div>
+
+    </div>
+
+    <!-- SIDEBAR: ERGEBNIS -->
+    <div>
+      <div style="position:sticky; top:80px;">
+        <div class="card">
+          <div class="card-title">📊 Zusammenfassung</div>
+          <div id="shop-summary"></div>
+        </div>
+        <div class="card" style="margin-top:1rem;">
+          <div class="card-title">🛒 Berechnete Einkaufsliste</div>
+          <div id="shop-result-list" style="font-size:13px;"></div>
+          <div id="shop-freitext-preview" style="font-size:13px; margin-top:0.75rem; padding-top:0.75rem; border-top:1px solid var(--border); color:var(--text-secondary); white-space:pre-wrap;"></div>
+        </div>
+        <div class="actions" style="flex-direction:column; gap:8px; margin-top:1rem;">
+          <button class="btn btn-primary" style="width:100%;" onclick="printShoppingList()">🖨️ Liste drucken / PDF</button>
+          <button class="btn btn-secondary" style="width:100%;" onclick="copyShoppingList()">📋 Als Text kopieren</button>
+          <button class="btn btn-ghost" style="width:100%;" onclick="sendShoppingMail()">✉️ Per Mail senden</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     MODUL 4: RECHNUNG
+═══════════════════════════════════════════ -->
+<div id="rechnung" class="section">
+  <div class="page-header">
+    <h1>🧾 Rechnungserstellung</h1>
+    <p>Professionelle Rechnung mit Logo — druckfertig als PDF speichern.</p>
+  </div>
+
+  <div class="layout-sidebar">
+    <div>
+      <div class="card">
+        <div class="card-title"><div class="step">1</div> Absender (deine Daten)</div>
+        <p style="font-size:12px; color:var(--text-muted); margin-bottom:1rem;">Diese Daten werden gespeichert und beim nächsten Mal vorausgefüllt.</p>
+
+        <div class="field">
+          <label class="field-label">Logo hochladen</label>
+          <div id="logo-upload-area" class="logo-upload">
+            <input type="file" id="logo-input" accept="image/*" onchange="loadLogo(event)">
+            <div id="logo-placeholder" class="logo-upload-text">
+              📁 Logo hier ablegen oder klicken<br>
+              <span style="font-size:11px;">PNG, JPG, SVG — max. 2 MB</span>
+            </div>
+            <div id="logo-loaded" class="logo-preview-wrap" style="display:none; justify-content:center;">
+              <img id="logo-preview-img" class="logo-preview-img" src="" alt="Logo">
+              <div>
+                <div style="font-size:13px; font-weight:500; color:var(--text);" id="logo-filename"></div>
+                <button class="btn btn-ghost btn-sm" style="margin-top:4px;" onclick="removeLogo(event)">Logo entfernen</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="field"><label class="field-label">Name / Firmenname</label><input type="text" id="r-name" placeholder="Max Mustermann" oninput="updateInvoice()"></div>
+          <div class="field"><label class="field-label">Zusatz (z.B. „Pizza Catering")</label><input type="text" id="r-zusatz" placeholder="Mobiles Pizza Catering" oninput="updateInvoice()"></div>
+        </div>
+        <div class="field"><label class="field-label">Straße + Hausnummer</label><input type="text" id="r-strasse" placeholder="Musterstraße 42" oninput="updateInvoice()"></div>
+        <div class="grid2">
+          <div class="field"><label class="field-label">PLZ</label><input type="text" id="r-plz" placeholder="70000" oninput="updateInvoice()"></div>
+          <div class="field"><label class="field-label">Ort</label><input type="text" id="r-ort-sender" placeholder="Stuttgart" oninput="updateInvoice()"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label class="field-label">Telefon</label><input type="tel" id="r-tel" placeholder="+49 171 ..." oninput="updateInvoice()"></div>
+          <div class="field"><label class="field-label">E-Mail</label><input type="email" id="r-email" placeholder="pizza@example.com" oninput="updateInvoice()"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label class="field-label">Steuer-Nr. / USt-IdNr.</label><input type="text" id="r-steuernr" placeholder="12/345/67890" oninput="updateInvoice()"></div>
+          <div class="field"><label class="field-label">IBAN</label><input type="text" id="r-iban" placeholder="DE00 1234 5678 9012 3456 78" oninput="updateInvoice()"></div>
+        </div>
+        <div class="field"><label class="field-label">Zahlungsziel (Tage)</label>
+          <select id="r-zahlungsziel" onchange="updateInvoice()">
+            <option value="7">7 Tage</option>
+            <option value="14" selected>14 Tage</option>
+            <option value="30">30 Tage</option>
+            <option value="sofort">Sofort / Bar</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="step">2</div> Rechnungsdaten</div>
+        <div class="grid2">
+          <div class="field"><label class="field-label">Rechnungsnummer</label><input type="text" id="r-nr" value="2025-001" oninput="updateInvoice()"></div>
+          <div class="field"><label class="field-label">Rechnungsdatum</label><input type="date" id="r-datum" oninput="updateInvoice()"></div>
+        </div>
+        <div class="field"><label class="field-label">Empfänger</label><input type="text" id="r-kunde" placeholder="Familie Müller, Musterstraße 5, 70000 Stuttgart" oninput="updateInvoice()"></div>
+        <div class="field"><label class="field-label">Leistungsbeschreibung</label><input type="text" id="r-leistung" placeholder="Pizza Catering, Geburtstagsfeier, 14.06.2025" oninput="updateInvoice()"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="step">3</div> Positionen</div>
+        <div class="grid3" style="margin-bottom:0.75rem;">
+          <div class="field"><label class="field-label">Personenanzahl</label><input type="number" id="r-personen" value="50" oninput="updateInvoice()"></div>
+          <div class="field"><label class="field-label">Preis pro Person (€)</label><input type="number" id="r-preispro" value="15.00" step="0.50" oninput="updateInvoice()"></div>
+          <div class="field"><label class="field-label">MwSt.-Satz (%)</label>
+            <select id="r-mwst" onchange="updateInvoice()">
+              <option value="7">7 % (Kleinunternehmer)</option>
+              <option value="19" selected>19 % (Regelbesteuerung)</option>
+              <option value="0">0 % (Kleinunternehmer §19)</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label class="field-label">Fahrtkosten (€)</label><input type="number" id="r-fahrt" value="0" step="5" oninput="updateInvoice()"></div>
+          <div class="field"><label class="field-label">Sonstiges / Extras (€)</label><input type="number" id="r-extras" value="0" step="5" oninput="updateInvoice()"></div>
+        </div>
+        <div class="field"><label class="field-label">Beschreibung Extras (optional)</label>
+          <input type="text" id="r-extras-desc" placeholder="z.B. Servietten, Aufbauhelfer, Sonderpizzen" oninput="updateInvoice()">
+        </div>
+        <div class="field">
+          <label class="field-label">Bereits gezahlte Anzahlung (€) — wird abgezogen</label>
+          <input type="number" id="r-anzahlung" value="0" step="10" oninput="updateInvoice()">
+        </div>
+      </div>
+    </div>
+
+    <!-- RECHNUNG VORSCHAU -->
+    <div>
+      <div style="position:sticky; top:80px;">
+        <div class="invoice-preview" id="invoice-output">
+          <div class="inv-header">
+            <div class="inv-company">
+              <div id="inv-logo-wrap" style="margin-bottom:10px; display:none;"><img id="inv-logo-img" class="inv-logo" src="" alt="Logo"></div>
+              <div class="inv-company-name" id="inv-name">Dein Name</div>
+              <div class="inv-company-detail" id="inv-detail">Adresse · Tel · E-Mail</div>
+            </div>
+            <div class="inv-right">
+              <div class="inv-title">Rechnung</div>
+              <div class="inv-meta" id="inv-meta">Nr.: —<br>Datum: —</div>
+            </div>
+          </div>
+          <hr class="divider">
+          <div class="inv-customer" id="inv-customer">An: Kunde</div>
+          <table class="inv-table">
+            <thead>
+              <tr>
+                <th>Pos.</th>
+                <th>Beschreibung</th>
+                <th class="td-right">Einzelpreis</th>
+                <th class="td-right">Betrag</th>
+              </tr>
+            </thead>
+            <tbody id="inv-tbody"></tbody>
+          </table>
+          <div class="inv-totals" id="inv-totals"></div>
+          <div class="inv-footer" id="inv-footer"></div>
+        </div>
+
+        <div class="actions" style="margin-top:1rem; flex-direction:column; gap:8px;">
+          <button class="btn btn-primary" style="width:100%;" onclick="printInvoice()">🖨️ Rechnung drucken / als PDF</button>
+          <button class="btn btn-secondary" style="width:100%;" onclick="sendInvoiceMail()">✉️ Per Mail senden</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     MODUL 3: ANGEBOT
+═══════════════════════════════════════════ -->
+<div id="angebot" class="section">
+  <div class="page-header">
+    <h1>📄 Angebot erstellen</h1>
+    <p>Direkte Antwort auf Anfrage und Detailbogen — Angebot per Mail versenden oder drucken.</p>
+  </div>
+
+  <div class="alert alert-info">
+    ℹ️ Tipp: Fülle zuerst <strong>Modul 1 (Anfrage)</strong> und <strong>Modul 2 (Detailbogen)</strong> aus — die Daten werden hier automatisch übernommen.
+    <button class="btn btn-ghost btn-sm" style="margin-left:12px;" onclick="pullAngebotData()">🔄 Daten jetzt übernehmen</button>
+  </div>
+
+  <div class="layout-sidebar">
+    <div>
+
+      <div class="card">
+        <div class="card-title"><div class="step">1</div> Veranstaltungsdaten (aus Anfrage übernommen)</div>
+        <div class="grid2">
+          <div class="field"><label class="field-label">Kunde / Ansprechpartner</label>
+            <input type="text" id="ang-kunde" placeholder="Max Mustermann" oninput="updateAngebot()">
+          </div>
+          <div class="field"><label class="field-label">E-Mail Kunde</label>
+            <input type="email" id="ang-email" placeholder="max@beispiel.de" oninput="updateAngebot()">
+          </div>
+        </div>
+        <div class="grid3">
+          <div class="field"><label class="field-label">Datum</label>
+            <input type="date" id="ang-datum" oninput="updateAngebot()">
+          </div>
+          <div class="field"><label class="field-label">Uhrzeit</label>
+            <input type="time" id="ang-uhrzeit" value="18:00" oninput="updateAngebot()">
+          </div>
+          <div class="field"><label class="field-label">Personenanzahl</label>
+            <input type="number" id="ang-personen" placeholder="50" oninput="updateAngebot()">
+          </div>
+        </div>
+        <div class="field"><label class="field-label">Veranstaltungsort</label>
+          <input type="text" id="ang-ort" placeholder="Straße, PLZ, Ort" oninput="updateAngebot()">
+        </div>
+        <div class="grid2">
+          <div class="field"><label class="field-label">Art der Veranstaltung</label>
+            <input type="text" id="ang-art" placeholder="z.B. Geburtstagsfeier" oninput="updateAngebot()">
+          </div>
+          <div class="field"><label class="field-label">Drinnen / Draußen</label>
+            <select id="ang-location" onchange="updateAngebot()">
+              <option>Draußen</option><option>Drinnen</option><option>Beides möglich</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="step">2</div> Leistungsumfang</div>
+        <div class="field"><label class="field-label">Gewählte Pizzasorten (aus Detailbogen)</label>
+          <input type="text" id="ang-pizzen" placeholder="z.B. Margherita, Salami, Schinken, Verdure" oninput="updateAngebot()">
+        </div>
+        <div class="field"><label class="field-label">Besondere Toppings / Extras</label>
+          <input type="text" id="ang-toppings" placeholder="z.B. Oliven, Chiliöl, Parmesancreme" oninput="updateAngebot()">
+        </div>
+        <div class="field"><label class="field-label">Inbegriffene Leistungen</label>
+          <textarea id="ang-leistungen" rows="4" oninput="updateAngebot()">Vorab Abstimmung und gemeinsame Auswahl von 4 verschiedenen Pizzen
+2,5 Stunden Live-Cooking-Pizzeria vor Ort, inkl. allem, was wir benötigen
+Auf- und Abbau des gesamten Equipments
+Anfahrt bis 20 km
+Auswahl an abwechslungsreichen Toppings für den extra Genuss</textarea>
+        </div>
+        <div class="field"><label class="field-label">Besondere Hinweise / Bedingungen</label>
+          <textarea id="ang-hinweise" rows="2" placeholder="z.B. 2 separate Stromkreise werden benötigt, Zufahrt für Fahrzeug nötig..." oninput="updateAngebot()"></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="step">3</div> Preiskalkulation</div>
+
+        <!-- PREISMODELL AUSWAHL -->
+        <div class="field">
+          <label class="field-label">Preismodell</label>
+          <div style="display:flex; gap:10px; margin-top:4px;">
+            <label style="display:flex; align-items:center; gap:8px; padding:10px 16px; border:1px solid var(--border); border-radius:var(--radius); cursor:pointer; flex:1; font-size:14px; transition:all 0.15s;" id="lbl-properson">
+              <input type="radio" name="ang-preismodell" value="properson" checked onchange="togglePreismodell()">
+              👤 Preis pro Person
+            </label>
+            <label style="display:flex; align-items:center; gap:8px; padding:10px 16px; border:1px solid var(--border); border-radius:var(--radius); cursor:pointer; flex:1; font-size:14px; transition:all 0.15s;" id="lbl-pauschal">
+              <input type="radio" name="ang-preismodell" value="pauschal" onchange="togglePreismodell()">
+              💶 Pauschalpreis
+            </label>
+          </div>
+        </div>
+
+        <!-- PRO PERSON FELDER -->
+        <div id="ang-properson-fields">
+          <div class="grid2">
+            <div class="field"><label class="field-label">Personenanzahl</label>
+              <input type="number" id="ang-preis-personen" placeholder="50" oninput="updateAngebot()">
+            </div>
+            <div class="field"><label class="field-label">Preis pro Person (€)</label>
+              <input type="number" id="ang-preis-pp" value="15.00" step="0.50" oninput="updateAngebot()">
+            </div>
+          </div>
+        </div>
+
+        <!-- PAUSCHAL FELDER -->
+        <div id="ang-pauschal-fields" style="display:none;">
+          <div class="field"><label class="field-label">Pauschalpreis (€)</label>
+            <input type="number" id="ang-pauschal" placeholder="z.B. 1050" step="10" oninput="updateAngebot()">
+          </div>
+        </div>
+
+        <!-- GEMEINSAME FELDER -->
+        <div class="grid2" style="margin-top:4px;">
+          <div class="field"><label class="field-label">Fahrtkosten (€)</label>
+            <input type="number" id="ang-fahrt" value="0" step="5" oninput="updateAngebot()">
+          </div>
+          <div class="field"><label class="field-label">Sonstige Positionen (€)</label>
+            <input type="number" id="ang-extras" value="0" step="5" oninput="updateAngebot()">
+          </div>
+        </div>
+        <div class="field"><label class="field-label">Beschreibung Sonstiges</label>
+          <input type="text" id="ang-extras-desc" placeholder="z.B. Sonderpizzen, Material" oninput="updateAngebot()">
+        </div>
+        <div class="grid2">
+          <div class="field"><label class="field-label">Anzahlung (€) — falls gewünscht</label>
+            <input type="number" id="ang-anzahlung" value="0" step="10" oninput="updateAngebot()">
+          </div>
+          <div class="field"><label class="field-label">Angebot gültig bis</label>
+            <input type="date" id="ang-gueltig" oninput="updateAngebot()">
+          </div>
+        </div>
+        <div class="field"><label class="field-label">Angebotsnummer</label>
+          <input type="text" id="ang-nr" value="ANG-2026-001" oninput="updateAngebot()">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="step">4</div> Persönlicher Angebots-Text</div>
+        <div class="field"><label class="field-label">Einleitungstext (erscheint oben im Angebot)</label>
+          <textarea id="ang-einleitung" rows="3" oninput="updateAngebot()">vielen Dank für Ihr Interesse an D&D Pizza-Catering! Wir bringen ein Stück Italien direkt zu Ihnen – Pizza frisch gebacken, duftend und live vor Ihren Gästen zubereitet. Anbei erhalten Sie unser unverbindliches Angebot.</textarea>
+        </div>
+        <div class="field"><label class="field-label">Schlusstext</label>
+          <textarea id="ang-schluss" rows="2" oninput="updateAngebot()">Ich freue mich auf Ihre Rückmeldung und stehe für Rückfragen jederzeit zur Verfügung.</textarea>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ANGEBOT VORSCHAU -->
+    <div>
+      <div style="position:sticky; top:80px;">
+        <div class="invoice-preview" id="angebot-output">
+          <div class="inv-header">
+            <div class="inv-company">
+              <div id="ang-inv-logo-wrap" style="margin-bottom:10px; display:none;"><img id="ang-inv-logo-img" class="inv-logo" src="" alt="Logo"></div>
+              <div class="inv-company-name" id="ang-inv-name">Dein Name</div>
+              <div class="inv-company-detail" id="ang-inv-detail">Adresse · Tel · E-Mail</div>
+            </div>
+            <div class="inv-right">
+              <div class="inv-title" style="color:var(--accent);">Angebot</div>
+              <div class="inv-meta" id="ang-inv-meta">Nr.: —<br>Datum: —<br>Gültig bis: —</div>
+            </div>
+          </div>
+          <hr class="divider">
+          <div class="inv-customer" id="ang-inv-customer"><strong>An:</strong> —</div>
+          <div style="font-size:13px; color:var(--text-secondary); margin-bottom:1rem; line-height:1.6;" id="ang-inv-einleitung"></div>
+
+          <div style="background:var(--surface-alt); border-radius:var(--radius); padding:12px 14px; margin-bottom:1rem; font-size:13px;">
+            <div id="ang-inv-event"></div>
+          </div>
+
+          <table class="inv-table">
+            <thead>
+              <tr>
+                <th>Pos.</th><th>Leistung</th><th class="td-right">Einzelpreis</th><th class="td-right">Betrag</th>
+              </tr>
+            </thead>
+            <tbody id="ang-inv-tbody"></tbody>
+          </table>
+          <div class="inv-totals" id="ang-inv-totals"></div>
+
+          <div style="margin-top:1.25rem; padding:10px 14px; background:var(--primary-light); border-radius:var(--radius); font-size:12px; color:var(--primary); border:1px solid rgba(192,57,43,0.15);" id="ang-inv-leistungen"></div>
+
+          <div style="font-size:12px; color:var(--text-muted); margin-top:1rem; line-height:1.8;" id="ang-inv-hinweise"></div>
+          <div style="font-size:13px; color:var(--text-secondary); margin-top:1rem; line-height:1.6;" id="ang-inv-schluss"></div>
+          <div class="inv-footer" id="ang-inv-footer"></div>
+        </div>
+
+        <div class="actions" style="margin-top:1rem; flex-direction:column; gap:8px;">
+          <button class="btn btn-primary" style="width:100%;" onclick="sendAngebotMail()">✉️ Angebot per Mail senden</button>
+          <button class="btn btn-secondary" style="width:100%;" onclick="window.print()">🖨️ Drucken / als PDF</button>
+          <button class="btn btn-ghost" style="width:100%;" onclick="copyAngebotText()">📋 Als Text kopieren</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     MODUL 6: EINSTELLUNGEN
+═══════════════════════════════════════════ -->
+<div id="einstellungen" class="section">
+  <div class="page-header">
+    <h1>⚙️ Einstellungen</h1>
+    <p>Deine Stammdaten — werden lokal im Browser gespeichert.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📬 Deine E-Mail-Adresse (für Absender)</div>
+    <div class="field"><label class="field-label">Deine E-Mail (wird in Mail-Links verwendet)</label>
+      <input type="email" id="cfg-email" placeholder="pizza@deinedomain.de" oninput="saveSettings()">
+    </div>
+    <div class="field"><label class="field-label">Dein Name</label>
+      <input type="text" id="cfg-name" placeholder="Max Mustermann" oninput="saveSettings()">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💶 Preise & Kalkulation</div>
+    <div class="grid3">
+      <div class="field"><label class="field-label">Standardpreis pro Person (€)</label>
+        <input type="number" id="cfg-preis" value="15" step="0.5" oninput="saveSettings()">
+      </div>
+      <div class="field"><label class="field-label">Pizzen pro Person (Standard)</label>
+        <input type="number" id="cfg-pp" value="2.5" step="0.5" oninput="saveSettings()">
+      </div>
+      <div class="field"><label class="field-label">Mindestteilnehmer</label>
+        <input type="number" id="cfg-min" value="20" oninput="saveSettings()">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📝 Mail-Signatur</div>
+    <div class="field"><label class="field-label">Signatur für ausgehende Mails</label>
+      <textarea id="cfg-signatur" rows="4" placeholder="Mit freundlichen Grüßen,&#10;Max Mustermann&#10;Pizza Catering&#10;Tel: +49 171 ..." oninput="saveSettings()"></textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">ℹ️ Über diese App</div>
+    <p style="font-size:13px; color:var(--text-secondary); line-height:1.7;">
+      Diese App läuft vollständig lokal in deinem Browser — es werden keine Daten an einen Server gesendet.
+      Alle Einstellungen werden im <code>localStorage</code> deines Browsers gespeichert.
+      Die App kann als einzelne HTML-Datei überall gehostet werden (GitHub Pages, Webserver, NAS etc.).
+    </p>
+    <div class="actions" style="margin-top:1rem;">
+      <button class="btn btn-ghost btn-sm" onclick="exportData()">💾 Daten exportieren (JSON)</button>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('import-file').click()">📂 Daten importieren</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('#main-nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ═══════════════════════════════════════════
+// TOAST NOTIFICATION
+// ═══════════════════════════════════════════
+function toast(msg, duration=2800) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// ═══════════════════════════════════════════
+// CHECKBOX STYLE TOGGLE
+// ═══════════════════════════════════════════
+function toggleCheckStyle(cb) {
+  cb.closest('.check-item').classList.toggle('checked', cb.checked);
+}
+
+// ═══════════════════════════════════════════
+// PIZZA SELECTOR
+// ═══════════════════════════════════════════
+const selectedPizzas = new Set();
+function togglePizza(card, name) {
+  if (selectedPizzas.has(name)) {
+    selectedPizzas.delete(name);
+    card.classList.remove('selected');
+  } else {
+    if (selectedPizzas.size >= 5) {
+      document.getElementById('pizza-warn').style.display = 'flex';
+      return;
+    }
+    selectedPizzas.add(name);
+    card.classList.add('selected');
+    document.getElementById('pizza-warn').style.display = 'none';
+  }
+  const el = document.getElementById('pizza-selected');
+  if (selectedPizzas.size === 0) {
+    el.textContent = 'Noch keine Sorten gewählt.';
+  } else {
+    el.innerHTML = `<strong>${selectedPizzas.size} Sorten gewählt:</strong> ${[...selectedPizzas].join(', ')}`;
+  }
+}
+
+// ═══════════════════════════════════════════
+// MODUL 1: SMART PASTE — Mail einlesen
+// ═══════════════════════════════════════════
+let parsedAnfrage = {};
+
+function smartPaste() {
+  var rawText = document.getElementById('smart-paste-input').value;
+  var resultOk  = document.getElementById('paste-result');
+  var resultErr = document.getElementById('paste-error');
+  var dataCard  = document.getElementById('parsed-data-card');
+
+  // Normalize: remove all line breaks so we can parse reliably
+  // The block looks like: ##ANFRAGE## NAME: X EMAIL: Y TEL: Z ... ##ENDE##
+  var startIdx = rawText.indexOf('##ANFRAGE##');
+  var endIdx   = rawText.indexOf('##ENDE##');
+
+  if (startIdx === -1 || endIdx === -1) {
+    resultOk.style.display  = 'none';
+    resultErr.style.display = 'block';
+    dataCard.style.display  = 'none';
+    return;
+  }
+
+  // Extract just the data block and normalize whitespace
+  var block = rawText.substring(startIdx + 11, endIdx);
+  // Replace all newlines/carriage returns with a space so we get one long string
+  block = block.replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ').trim();
+
+  // Known keys in order - extract value between this key and the next
+  var keys = ['NAME','EMAIL','TEL','DATUM','UHRZEIT','PERSONEN','ORT','ART','LOCATION','QUELLE','ANMERKUNGEN'];
+
+  function extractVal(key) {
+    var search = key + ':';
+    var start = block.indexOf(search);
+    if (start === -1) return '';
+    start += search.length;
+    // Find where the next key starts
+    var end = block.length;
+    for (var i = 0; i < keys.length; i++) {
+      if (keys[i] === key) continue;
+      var nextSearch = keys[i] + ':';
+      var nextIdx = block.indexOf(nextSearch, start);
+      if (nextIdx !== -1 && nextIdx < end) {
+        end = nextIdx;
+      }
+    }
+    return block.substring(start, end).trim();
+  }
+
+  parsedAnfrage = {
+    name:        extractVal('NAME'),
+    email:       extractVal('EMAIL'),
+    tel:         extractVal('TEL'),
+    datum:       extractVal('DATUM'),
+    uhrzeit:     extractVal('UHRZEIT'),
+    personen:    extractVal('PERSONEN'),
+    ort:         extractVal('ORT'),
+    art:         extractVal('ART'),
+    location:    extractVal('LOCATION'),
+    quelle:      extractVal('QUELLE'),
+    anmerkungen: extractVal('ANMERKUNGEN'),
+  };
+
+  // Fill fields
+  function setField(id, val) {
+    var el = document.getElementById(id);
+    if (el) el.value = (val === '-' || val === '--') ? '' : val;
+  }
+  setField('a-vorname',    parsedAnfrage.name);
+  setField('a-email',      parsedAnfrage.email);
+  setField('a-tel',        parsedAnfrage.tel);
+  setField('a-datum',      parsedAnfrage.datum);
+  setField('a-uhrzeit',    parsedAnfrage.uhrzeit);
+  setField('a-personen',   parsedAnfrage.personen);
+  setField('a-ort',        parsedAnfrage.ort);
+  setField('a-art',        parsedAnfrage.art);
+  setField('a-location',   parsedAnfrage.location);
+  setField('a-quelle',     parsedAnfrage.quelle);
+  setField('a-anmerkungen',parsedAnfrage.anmerkungen);
+
+  resultErr.style.display = 'none';
+  resultOk.style.display  = 'block';
+  dataCard.style.display  = 'block';
+  document.getElementById('confirm-mail-card').style.display = 'none';
+  toast('Daten eingelesen!');
+}
+
+function clearAnfrageFields() {
+  ['a-vorname','a-email','a-tel','a-datum','a-uhrzeit','a-personen','a-ort','a-art','a-location','a-quelle','a-anmerkungen'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('paste-result').style.display  = 'none';
+  document.getElementById('paste-error').style.display   = 'none';
+  document.getElementById('parsed-data-card').style.display = 'none';
+  document.getElementById('confirm-mail-card').style.display = 'none';
+  parsedAnfrage = {};
+}
+
+function transferToModules() {
+  const p = parsedAnfrage;
+  if (!p.name) { toast('⚠️ Zuerst Mail einlesen!'); return; }
+  // → Detailbogen
+  const set = (id, val) => { const el = document.getElementById(id); if (el && val && val !== '—') el.value = val; };
+  set('d-datum',         p.datum);
+  set('d-uhrzeit',       p.uhrzeit);
+  set('d-personen',      p.personen);
+  set('d-adresse',       p.ort);
+  // → Angebot
+  set('ang-kunde',       p.name);
+  set('ang-email',       p.email);
+  set('ang-datum',       p.datum);
+  set('ang-uhrzeit',     p.uhrzeit);
+  set('ang-personen',    p.personen);
+  set('ang-preis-personen', p.personen);
+  set('ang-ort',         p.ort);
+  set('ang-art',         p.art);
+  // → Einkaufsliste
+  set('s-personen',      p.personen);
+  // → Rechnung
+  set('r-kunde',         p.name + (p.email ? ', ' + p.email : ''));
+  set('r-personen',      p.personen);
+  const desc = 'Pizza Catering, ' + p.art + (p.datum ? ', ' + new Date(p.datum).toLocaleDateString('de-DE') : '');
+  set('r-leistung', desc);
+  set('ang-leistung', desc);
+  // Gültig bis Angebot +14 Tage
+  const gd = new Date(); gd.setDate(gd.getDate() + 14);
+  set('ang-gueltig', gd.toISOString().split('T')[0]);
+  calcShopping();
+  updateInvoice();
+  updateAngebot();
+  toast('✅ Daten in alle Module übertragen!');
+}
+
+function buildAndShowConfirmMail() {
+  const p = parsedAnfrage;
+  if (!p.email) { toast('⚠️ Zuerst Mail einlesen!'); return; }
+  const sig = getSetting('cfg-signatur') || 'Mit freundlichen Grüßen\nD&D Pizza-Catering\nTel.: 0173 3064062 | dudpizza@gmx.net';
+  const datumF = p.datum ? new Date(p.datum).toLocaleDateString('de-DE', {day:'2-digit',month:'long',year:'numeric'}) : '—';
+  const mailText = `Hallo ${p.name || 'liebe Interessentin / lieber Interessent'},
+
+vielen Dank für Ihre Anfrage bei D&D Pizza-Catering!
+
+Wir haben Ihre Anfrage erhalten und melden uns innerhalb von 48 Stunden bei Ihnen.
+
+━━━ Ihre Angaben ━━━
+
+Veranstaltung:    ${p.art}
+Datum:            ${datumF}
+Uhrzeit:          ${p.uhrzeit} Uhr
+Ort:              ${p.ort}
+Personenanzahl:   ca. ${p.personen} Personen
+Drinnen/Draußen:  ${p.location}
+${p.anmerkungen && p.anmerkungen !== '—' ? '\nAnmerkungen:\n' + p.anmerkungen : ''}
+
+━━━━━━━━━━━━━━━━━━
+
+${sig}`;
+
+  const subject = `D&D Pizza-Catering — Ihre Anfrage vom ${new Date().toLocaleDateString('de-DE')}`;
+  document.getElementById('mail-to-preview').textContent = p.email;
+  document.getElementById('mail-subject-preview').textContent = subject;
+  document.getElementById('mail-body-preview').textContent = mailText;
+  document.getElementById('confirm-mail-card').style.display = 'block';
+  document.getElementById('confirm-mail-card').scrollIntoView({behavior:'smooth'});
+
+  // Für openConfirmMail zwischenspeichern
+  window._confirmMailData = { email: p.email, subject, body: mailText };
+}
+
+function openConfirmMail() {
+  const d = window._confirmMailData;
+  if (!d) return;
+  window.location.href = `mailto:${d.email}?subject=${encodeURIComponent(d.subject)}&body=${encodeURIComponent(d.body)}`;
+  toast('✉️ Mail-Programm wird geöffnet...');
+}
+
+// ═══════════════════════════════════════════
+// MODUL 2: DETAILBOGEN MAIL
+// ═══════════════════════════════════════════
+function sendDetailbogenMail() {
+  const pizzas = [...selectedPizzas].join(', ') || '—';
+  const d = {
+    datum: document.getElementById('d-datum').value,
+    uhrzeit: document.getElementById('d-uhrzeit').value,
+    aufbau: document.getElementById('d-aufbau').value,
+    personen: document.getElementById('d-personen').value,
+    adresse: document.getElementById('d-adresse').value,
+    ansprechpartner: document.getElementById('d-ansprechpartner').value,
+  };
+  const datumFormatted = d.datum ? new Date(d.datum).toLocaleDateString('de-DE',{day:'2-digit',month:'long',year:'numeric'}) : '—';
+  const sig = getSetting('cfg-signatur') || '';
+  const body = `DETAILBOGEN — Pizza Catering
+
+Datum:            ${datumFormatted}
+Beginn:           ${d.uhrzeit} Uhr
+Aufbau ab:        ${d.aufbau} Uhr
+Personenanzahl:   ${d.personen}
+Adresse:          ${d.adresse}
+Ansprechpartner:  ${d.ansprechpartner}
+
+Pizzasorten (${selectedPizzas.size}/5): ${pizzas}
+
+Bitte prüfen Sie alle Angaben und bestätigen Sie diese.
+
+${sig}`;
+  const subject = encodeURIComponent(`Pizza Catering Detailbogen — ${datumFormatted}`);
+  window.location.href = `mailto:?subject=${subject}&body=${encodeURIComponent(body)}`;
+  toast('✉️ Mail-Programm wird geöffnet...');
+}
+
+// ═══════════════════════════════════════════
+// MODUL 3: EINKAUFSLISTE BERECHNUNG
+// ═══════════════════════════════════════════
+function addRow(containerId, isBelag) {
+  var container = document.getElementById(containerId);
+  var row = document.createElement('div');
+  row.className = 'shop-input-row';
+  row.innerHTML = '<div class="shop-input-name"><input type="text" placeholder="Zutat" oninput="calcShopping()"></div>'
+    + '<div class="shop-input-menge"><input type="number" class="zutat-menge' + (isBelag ? ' belag-menge' : '') + '" value="0" min="0" oninput="calcShopping()"></div>'
+    + '<div class="shop-input-einheit"><select class="zutat-einheit" onchange="calcShopping()"><option value="g">g / Pizza</option><option value="ml">ml / Pizza</option><option value="stk" selected>Stk / Pizza</option></select></div>'
+    + '<div class="shop-input-result">—</div>'
+    + '<button class="shop-del-btn" onclick="deleteRow(this)">\u2715</button>';
+  container.appendChild(row);
+  calcShopping();
+}
+
+function deleteRow(btn) {
+  btn.closest('.shop-input-row').remove();
+  calcShopping();
+}
+
+function calcShopping() {
+  var personen = parseFloat(document.getElementById('s-personen').value) || 50;
+  var pp       = parseFloat(document.getElementById('s-pp').value) || 2.5;
+  var sorten   = parseInt(document.getElementById('s-sorten').value) || 4;
+  var puffer   = parseFloat(document.getElementById('s-puffer').value) / 100 || 0;
+  var totalRaw = Math.ceil(personen * pp);
+  var total    = Math.ceil(totalRaw * (1 + puffer));
+  var proSorte = Math.ceil(total / sorten);
+
+  function formatMenge(raw, einheit) {
+    if (einheit === 'g') {
+      if (raw >= 1000) return (raw / 1000).toFixed(2).replace(/\.?0+$/, '') + ' kg';
+      return Math.ceil(raw) + ' g';
+    } else if (einheit === 'ml') {
+      if (raw >= 1000) return (raw / 1000).toFixed(2).replace(/\.?0+$/, '') + ' L';
+      return Math.ceil(raw) + ' ml';
+    } else {
+      return raw % 1 === 0 ? raw + ' Stk' : raw.toFixed(1) + ' Stk';
+    }
+  }
+
+  // Alle Zeilen berechnen
+  function calcRows(containerId, isBelag) {
+    var rows = document.querySelectorAll('#' + containerId + ' .shop-input-row');
+    rows.forEach(function(row) {
+      var mengeEl  = row.querySelector('.zutat-menge');
+      var einheitEl= row.querySelector('.zutat-einheit');
+      var resultEl = row.querySelector('.shop-input-result');
+      if (!mengeEl || !resultEl) return;
+      var menge   = parseFloat(mengeEl.value) || 0;
+      var einheit = einheitEl ? einheitEl.value : 'g';
+      var anzahl  = isBelag ? proSorte : total;
+      var gesamt  = menge * anzahl;
+      resultEl.textContent = menge > 0 ? formatMenge(gesamt, einheit) : '—';
+    });
+  }
+
+  calcRows('teig-rows', false);
+  calcRows('sauce-rows', false);
+  calcRows('belag-rows', true);
+  calcRows('material-rows', false);
+
+  // Zusammenfassung
+  document.getElementById('shop-summary').innerHTML =
+    '<div class="shop-row"><span>Personen</span><span style="font-weight:600;">' + personen + '</span></div>'
+    + '<div class="shop-row"><span>Pizzen gesamt</span><span style="font-weight:600;">' + total + ' Stk</span></div>'
+    + '<div class="shop-row"><span>davon Puffer</span><span style="font-weight:600;">' + (total - totalRaw) + ' Stk</span></div>'
+    + '<div class="shop-row"><span>Pizzen pro Sorte</span><span style="font-weight:600;">ca. ' + proSorte + ' Stk</span></div>'
+    + '<div class="shop-row" style="border-bottom:none;"><span>Sorten</span><span style="font-weight:600;">' + sorten + '</span></div>';
+
+  // Seitenleiste: Liste aufbauen
+  function buildResultSection(containerId, title, isBelag) {
+    var rows = document.querySelectorAll('#' + containerId + ' .shop-input-row');
+    var html = '<div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin:.75rem 0 .4rem;">' + title + '</div>';
+    rows.forEach(function(row) {
+      var nameEl  = row.querySelector('.shop-input-name input');
+      var resultEl= row.querySelector('.shop-input-result');
+      var name    = nameEl ? nameEl.value.trim() : '';
+      var result  = resultEl ? resultEl.textContent : '—';
+      if (name) html += '<div class="shop-row"><span>' + name + '</span><span class="shop-qty">' + result + '</span></div>';
+    });
+    return html;
+  }
+
+  var listHtml = buildResultSection('teig-rows',     '🌾 Teig & Basis', false)
+    + buildResultSection('sauce-rows',   '🍅 Sauce & Käse', false)
+    + buildResultSection('belag-rows',   '🥩 Beläge',        true)
+    + buildResultSection('material-rows','📦 Material',      false);
+  document.getElementById('shop-result-list').innerHTML = listHtml;
+
+  // Freitext
+  var freitext = document.getElementById('s-freitext').value.trim();
+  var ftEl = document.getElementById('shop-freitext-preview');
+  if (freitext) {
+    ftEl.innerHTML = '<strong style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">📝 Notizen</strong><br>' + freitext.replace(/</g,'&lt;');
+    ftEl.style.display = 'block';
+  } else {
+    ftEl.style.display = 'none';
+  }
+}
+
+function getShoppingText() {
+  var personen = document.getElementById('s-personen').value;
+  var pp       = parseFloat(document.getElementById('s-pp').value);
+  var total    = Math.ceil(personen * pp);
+  var text = 'EINKAUFSLISTE D&D Pizza-Catering\n';
+  text += personen + ' Personen / ' + total + ' Pizzen\n';
+  text += '================================\n\n';
+
+  function sectionText(containerId, title, isBelag) {
+    var personen2= parseFloat(document.getElementById('s-personen').value)||50;
+    var pp2      = parseFloat(document.getElementById('s-pp').value)||2.5;
+    var sorten   = parseInt(document.getElementById('s-sorten').value)||4;
+    var puffer   = parseFloat(document.getElementById('s-puffer').value)/100||0;
+    var t        = Math.ceil(Math.ceil(personen2*pp2)*(1+puffer));
+    var proSorte2= Math.ceil(t/sorten);
+    var rows = document.querySelectorAll('#' + containerId + ' .shop-input-row');
+    if (rows.length === 0) return '';
+    var out = title + '\n';
+    rows.forEach(function(row) {
+      var nameEl  = row.querySelector('.shop-input-name input');
+      var resultEl= row.querySelector('.shop-input-result');
+      var name    = nameEl ? nameEl.value.trim() : '';
+      var result  = resultEl ? resultEl.textContent : '';
+      if (name && result && result !== '—') out += '  ' + name + ': ' + result + '\n';
+    });
+    return out + '\n';
+  }
+
+  text += sectionText('teig-rows',     'TEIG & BASIS',    false);
+  text += sectionText('sauce-rows',    'SAUCE & KÄSE',    false);
+  text += sectionText('belag-rows',    'BELÄGE',          true);
+  text += sectionText('material-rows', 'VERBRAUCHSMATERIAL', false);
+
+  var freitext = document.getElementById('s-freitext').value.trim();
+  if (freitext) text += 'NOTIZEN / SONSTIGES\n' + freitext + '\n';
+  return text;
+}
+
+function copyShoppingList() {
+  navigator.clipboard.writeText(getShoppingText()).then(function() { toast('Einkaufsliste kopiert!'); });
+}
+
+function sendShoppingMail() {
+  var body = encodeURIComponent(getShoppingText());
+  window.location.href = 'mailto:?subject=' + encodeURIComponent('Einkaufsliste D&D Pizza-Catering') + '&body=' + body;
+  toast('Mail-Programm wird geöffnet...');
+}
+
+function printShoppingList() {
+  window.print();
+}
+
+// ═══════════════════════════════════════════
+// MODUL 4: RECHNUNG
+// ═══════════════════════════════════════════
+let logoDataUrl = null;
+
+function loadLogo(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    logoDataUrl = e.target.result;
+    document.getElementById('logo-placeholder').style.display = 'none';
+    document.getElementById('logo-loaded').style.display = 'flex';
+    document.getElementById('logo-preview-img').src = logoDataUrl;
+    document.getElementById('logo-filename').textContent = file.name;
+    document.getElementById('inv-logo-img').src = logoDataUrl;
+    document.getElementById('inv-logo-wrap').style.display = 'block';
+    updateInvoice();
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeLogo(e) {
+  e.stopPropagation();
+  logoDataUrl = null;
+  document.getElementById('logo-placeholder').style.display = 'block';
+  document.getElementById('logo-loaded').style.display = 'none';
+  document.getElementById('inv-logo-wrap').style.display = 'none';
+  document.getElementById('logo-input').value = '';
+  updateInvoice();
+}
+
+function updateInvoice() {
+  const get = id => (document.getElementById(id) || {}).value || '';
+  const name = get('r-name') || 'Dein Name';
+  const zusatz = get('r-zusatz');
+  const strasse = get('r-strasse');
+  const plz = get('r-plz');
+  const ort = get('r-ort-sender');
+  const tel = get('r-tel');
+  const email = get('r-email');
+  const nr = get('r-nr') || '—';
+  const datum = get('r-datum');
+  const steuernr = get('r-steuernr');
+  const iban = get('r-iban');
+  const zahlungsziel = get('r-zahlungsziel');
+  const kunde = get('r-kunde') || '—';
+  const leistung = get('r-leistung') || 'Pizza Catering';
+  const personen = parseFloat(get('r-personen')) || 0;
+  const preispro = parseFloat(get('r-preispro')) || 0;
+  const mwstSatz = parseFloat(get('r-mwst')) || 19;
+  const fahrt = parseFloat(get('r-fahrt')) || 0;
+  const extras = parseFloat(get('r-extras')) || 0;
+  const extrasDesc = get('r-extras-desc') || 'Extras';
+  const anzahlung = parseFloat(get('r-anzahlung')) || 0;
+
+  const datumFormatted = datum ? new Date(datum).toLocaleDateString('de-DE', {day:'2-digit',month:'2-digit',year:'numeric'}) : '—';
+
+  // Update header
+  document.getElementById('inv-name').textContent = name + (zusatz ? ` — ${zusatz}` : '');
+  let detail = [strasse, `${plz} ${ort}`.trim(), tel, email].filter(Boolean).join(' · ');
+  document.getElementById('inv-detail').textContent = detail || 'Adresse · Tel · E-Mail';
+  document.getElementById('inv-meta').innerHTML = `Nr.: ${nr}<br>Datum: ${datumFormatted}`;
+  document.getElementById('inv-customer').innerHTML = `<strong>Rechnungsempfänger:</strong> ${kunde}`;
+
+  // Positions
+  let pos = 1;
+  let rows = '';
+  const hauptBetrag = personen * preispro;
+  rows += `<tr><td>${pos++}</td><td>${leistung}<br><span style="font-size:11px;color:#888">${personen} Personen × ${preispro.toFixed(2)} €</span></td><td class="td-right">${preispro.toFixed(2)} €</td><td class="td-right">${hauptBetrag.toFixed(2)} €</td></tr>`;
+  if (fahrt > 0) rows += `<tr><td>${pos++}</td><td>Fahrtkosten</td><td class="td-right">pauschal</td><td class="td-right">${fahrt.toFixed(2)} €</td></tr>`;
+  if (extras > 0) rows += `<tr><td>${pos++}</td><td>${extrasDesc}</td><td class="td-right">pauschal</td><td class="td-right">${extras.toFixed(2)} €</td></tr>`;
+  if (anzahlung > 0) rows += `<tr><td>${pos++}</td><td>Abzgl. geleistete Anzahlung</td><td class="td-right"></td><td class="td-right" style="color:var(--success);">−${anzahlung.toFixed(2)} €</td></tr>`;
+  document.getElementById('inv-tbody').innerHTML = rows;
+
+  const netto = hauptBetrag + fahrt + extras - anzahlung;
+  const mwst = mwstSatz > 0 ? netto * mwstSatz / 100 : 0;
+  const brutto = netto + mwst;
+
+  let totals = `<div class="inv-total-row"><span>Nettobetrag</span><span>${netto.toFixed(2)} €</span></div>`;
+  if (mwstSatz > 0) totals += `<div class="inv-total-row"><span>zzgl. ${mwstSatz}% MwSt.</span><span>${mwst.toFixed(2)} €</span></div>`;
+  totals += `<div class="inv-total-row final"><span>Gesamtbetrag</span><span>${brutto.toFixed(2)} €</span></div>`;
+  document.getElementById('inv-totals').innerHTML = totals;
+
+  let zahlungText = '';
+  if (zahlungsziel === 'sofort') zahlungText = 'Zahlbar sofort / bei Barzahlung vor Ort.';
+  else zahlungText = `Zahlbar innerhalb von ${zahlungsziel} Tagen nach Rechnungserhalt.`;
+
+  let footer = `${zahlungText}<br>`;
+  if (iban) footer += `IBAN: ${iban}<br>`;
+  if (steuernr) footer += `Steuer-Nr.: ${steuernr}`;
+  if (mwstSatz === 0) footer += '<br>Gemäß §19 UStG wird keine Umsatzsteuer berechnet.';
+  document.getElementById('inv-footer').innerHTML = footer;
+
+  saveSettings();
+}
+
+function printInvoice() {
+  window.print();
+}
+
+function sendInvoiceMail() {
+  const get = id => (document.getElementById(id)||{}).value || '';
+  const nr = get('r-nr') || '—';
+  const datum = get('r-datum');
+  const datumFormatted = datum ? new Date(datum).toLocaleDateString('de-DE') : '—';
+  const brutto = (() => {
+    const p = parseFloat(get('r-personen'))||0, pp = parseFloat(get('r-preispro'))||0;
+    const f = parseFloat(get('r-fahrt'))||0, e = parseFloat(get('r-extras'))||0;
+    const a = parseFloat(get('r-anzahlung'))||0, m = parseFloat(get('r-mwst'))||19;
+    const n = p*pp+f+e-a;
+    return (n + n*m/100).toFixed(2);
+  })();
+  const sig = getSetting('cfg-signatur') || '';
+  const body = `Sehr geehrte Damen und Herren,
+
+im Anhang erhalten Sie die Rechnung Nr. ${nr} vom ${datumFormatted} über ${brutto} €.
+
+Bitte drucken Sie diese E-Mail aus oder speichern Sie die Rechnung als PDF (Drucken → Als PDF speichern).
+
+${sig}`;
+  const subject = encodeURIComponent(`Rechnung Nr. ${nr} — Pizza Catering`);
+  window.location.href = `mailto:?subject=${subject}&body=${encodeURIComponent(body)}`;
+  toast('✉️ Mail-Programm wird geöffnet...');
+}
+
+// ═══════════════════════════════════════════
+// MODUL 3: ANGEBOT
+// ═══════════════════════════════════════════
+function togglePreismodell() {
+  const modellEl = document.querySelector('input[name="ang-preismodell"]:checked');
+  const isPauschal = modellEl && modellEl.value === 'pauschal';
+  document.getElementById('ang-properson-fields').style.display = isPauschal ? 'none' : 'block';
+  document.getElementById('ang-pauschal-fields').style.display  = isPauschal ? 'block' : 'none';
+  // Radiobutton-Labels visuell hervorheben
+  document.getElementById('lbl-pauschal').style.borderColor   = isPauschal ? 'var(--primary)' : 'var(--border)';
+  document.getElementById('lbl-pauschal').style.background    = isPauschal ? 'var(--primary-light)' : '';
+  document.getElementById('lbl-properson').style.borderColor  = isPauschal ? 'var(--border)' : 'var(--primary)';
+  document.getElementById('lbl-properson').style.background   = isPauschal ? '' : 'var(--primary-light)';
+  updateAngebot();
+}
+
+function pullAngebotData() {
+  // Daten aus Anfrage-Formular übernehmen
+  const map = {
+    'ang-kunde': () => document.getElementById('a-vorname').value.trim(),
+    'ang-email': () => document.getElementById('a-email').value,
+    'ang-datum': () => document.getElementById('a-datum').value,
+    'ang-uhrzeit': () => document.getElementById('a-uhrzeit').value,
+    'ang-personen': () => document.getElementById('a-personen').value,
+    'ang-preis-personen': () => document.getElementById('a-personen').value,
+    'ang-ort': () => document.getElementById('a-ort').value,
+    'ang-art': () => document.getElementById('a-art').value,
+  };
+  Object.entries(map).forEach(([id, fn]) => {
+    const el = document.getElementById(id);
+    const val = fn();
+    if (el && val) el.value = val;
+  });
+  // Standort aus Detailbogen
+  const dAdr = document.getElementById('d-adresse').value;
+  if (dAdr) document.getElementById('ang-ort').value = dAdr;
+  // Pizzasorten aus Detailbogen
+  if (selectedPizzas.size > 0) {
+    document.getElementById('ang-pizzen').value = [...selectedPizzas].join(', ');
+  }
+  // Preis aus Einstellungen
+  const cfgPreis = getSetting('cfg-preis');
+  if (cfgPreis) document.getElementById('ang-preis-pp').value = cfgPreis;
+  // Gültig bis: +14 Tage
+  const d = new Date(); d.setDate(d.getDate() + 14);
+  document.getElementById('ang-gueltig').value = d.toISOString().split('T')[0];
+  updateAngebot();
+  toast('✅ Daten übernommen!');
+}
+
+function updateAngebot() {
+  const get = id => (document.getElementById(id)||{}).value || '';
+  const kunde = get('ang-kunde') || '—';
+  const email = get('ang-email');
+  const datum = get('ang-datum');
+  const uhrzeit = get('ang-uhrzeit');
+  const personen = parseFloat(get('ang-personen')) || 0;
+  const ort = get('ang-ort') || '—';
+  const art = get('ang-art') || '—';
+  const location = get('ang-location');
+  const pizzen = get('ang-pizzen') || '—';
+  const toppings = get('ang-toppings');
+  const leistungen = get('ang-leistungen');
+  const hinweise = get('ang-hinweise');
+  const preisPersonen = parseFloat(get('ang-preis-personen')) || personen;
+  const preispp = parseFloat(get('ang-preis-pp')) || 0;
+  const pauschal = parseFloat(get('ang-pauschal')) || 0;
+  const fahrt = parseFloat(get('ang-fahrt')) || 0;
+  const extras = parseFloat(get('ang-extras')) || 0;
+  const extrasDesc = get('ang-extras-desc') || 'Sonstige Leistungen';
+  const anzahlung = parseFloat(get('ang-anzahlung')) || 0;
+
+  // Preismodell ermitteln
+  const modellEl = document.querySelector('input[name="ang-preismodell"]:checked');
+  const istPauschal = modellEl && modellEl.value === 'pauschal';
+  const nr = get('ang-nr') || '—';
+  const gueltig = get('ang-gueltig');
+  const einleitung = get('ang-einleitung');
+  const schluss = get('ang-schluss');
+
+  const heute = new Date().toLocaleDateString('de-DE', {day:'2-digit',month:'2-digit',year:'numeric'});
+  const datumF = datum ? new Date(datum).toLocaleDateString('de-DE', {day:'2-digit',month:'long',year:'numeric'}) : '—';
+  const gueltigF = gueltig ? new Date(gueltig).toLocaleDateString('de-DE', {day:'2-digit',month:'2-digit',year:'numeric'}) : '—';
+
+  // Absenderdaten aus Rechnung-Modul
+  const sName = getSetting('r-name') || get('cfg-name') || 'Dein Name';
+  const sZusatz = getSetting('r-zusatz') || '';
+  const sStrasse = getSetting('r-strasse') || '';
+  const sPlz = getSetting('r-plz') || '';
+  const sOrt = getSetting('r-ort-sender') || '';
+  const sTel = getSetting('r-tel') || '';
+  const sEmail = getSetting('r-email') || '';
+  const sIban = getSetting('r-iban') || '';
+
+  document.getElementById('ang-inv-name').textContent = sName + (sZusatz ? ` — ${sZusatz}` : '');
+  document.getElementById('ang-inv-detail').textContent = [sStrasse, `${sPlz} ${sOrt}`.trim(), sTel, sEmail].filter(Boolean).join(' · ') || 'Adresse · Tel · E-Mail';
+  document.getElementById('ang-inv-meta').innerHTML = `Nr.: ${nr}<br>Datum: ${heute}<br>Gültig bis: ${gueltigF}`;
+  document.getElementById('ang-inv-customer').innerHTML = `<strong>An:</strong> ${kunde}${email ? ` &lt;${email}&gt;` : ''}`;
+  document.getElementById('ang-inv-einleitung').textContent = einleitung ? `Sehr geehrte/r ${kunde},\n\n${einleitung}` : '';
+
+  document.getElementById('ang-inv-event').innerHTML =
+    `<strong>Veranstaltungsdetails:</strong><br>` +
+    `📅 ${datumF} · ${uhrzeit} Uhr &nbsp;|&nbsp; ` +
+    `👥 ${preisPersonen || personen || '—'} Personen &nbsp;|&nbsp; ` +
+    `📍 ${ort}<br>` +
+    `🎉 ${art} &nbsp;|&nbsp; ${location}` +
+    (pizzen !== '—' ? `<br>🍕 Sorten: ${pizzen}` : '') +
+    (toppings ? `<br>✨ Extras: ${toppings}` : '');
+
+  // Positionen
+  let pos = 1;
+  let rows = '';
+  let hauptBetrag = 0;
+
+  if (istPauschal) {
+    hauptBetrag = pauschal;
+    if (hauptBetrag > 0) {
+      rows += `<tr><td>${pos++}</td><td>Pizza Catering — Pauschale<br><span style="font-size:11px;color:#888">inkl. aller Leistungen</span></td><td class="td-right">pauschal</td><td class="td-right">${hauptBetrag.toFixed(2)} €</td></tr>`;
+    }
+  } else {
+    hauptBetrag = preisPersonen * preispp;
+    if (hauptBetrag > 0) {
+      rows += `<tr><td>${pos++}</td><td>Pizza Catering<br><span style="font-size:11px;color:#888">${preisPersonen} Pers. × ${preispp.toFixed(2)} €</span></td><td class="td-right">${preispp.toFixed(2)} €</td><td class="td-right">${hauptBetrag.toFixed(2)} €</td></tr>`;
+    }
+  }
+  if (fahrt > 0) rows += `<tr><td>${pos++}</td><td>Fahrtkosten</td><td class="td-right">pauschal</td><td class="td-right">${fahrt.toFixed(2)} €</td></tr>`;
+  if (extras > 0) rows += `<tr><td>${pos++}</td><td>${extrasDesc}</td><td class="td-right">pauschal</td><td class="td-right">${extras.toFixed(2)} €</td></tr>`;
+  document.getElementById('ang-inv-tbody').innerHTML = rows || '<tr><td colspan="4" style="color:#aaa;font-size:12px;padding:8px;">Preis eingeben...</td></tr>';
+
+  const gesamt = hauptBetrag + fahrt + extras;
+  let totalsHtml = '';
+  if (gesamt > 0) {
+    totalsHtml = `<div class="inv-total-row"><span>Gesamtbetrag (inkl. MwSt.)</span><span style="font-weight:700;font-size:15px;">${gesamt.toFixed(2)} €</span></div>`;
+    if (anzahlung > 0) {
+      totalsHtml += `<div class="inv-total-row" style="color:var(--success);"><span>Anzahlung (fällig bei Auftragsbestätigung)</span><span>${anzahlung.toFixed(2)} €</span></div>`;
+      totalsHtml += `<div class="inv-total-row final"><span>Restbetrag (fällig am Veranstaltungstag)</span><span>${(gesamt - anzahlung).toFixed(2)} €</span></div>`;
+    }
+  }
+  document.getElementById('ang-inv-totals').innerHTML = totalsHtml;
+
+  // Leistungsumfang
+  if (leistungen) {
+    document.getElementById('ang-inv-leistungen').innerHTML =
+      '<strong>Im Angebot enthalten:</strong><br>' +
+      leistungen.split('\n').filter(Boolean).map(l => `✓ ${l}`).join('<br>');
+  }
+
+  // Hinweise
+  document.getElementById('ang-inv-hinweise').innerHTML = hinweise
+    ? `<strong>Technische Anforderungen / Hinweise:</strong><br>${hinweise.split('\n').filter(Boolean).map(l => `• ${l}`).join('<br>')}`
+    : '';
+
+  document.getElementById('ang-inv-schluss').textContent = schluss;
+
+  // Footer
+  let footer = `Dieses Angebot ist freibleibend und unverbindlich. Gültig bis ${gueltigF}.`;
+  if (sIban) footer += `<br>Bankverbindung: IBAN ${sIban}`;
+  document.getElementById('ang-inv-footer').innerHTML = footer;
+
+  // Logo aus Rechnung-Modul übernehmen
+  if (logoDataUrl) {
+    document.getElementById('ang-inv-logo-img').src = logoDataUrl;
+    document.getElementById('ang-inv-logo-wrap').style.display = 'block';
+  }
+}
+
+function getAngebotText() {
+  const get = id => (document.getElementById(id)||{}).value || '';
+  const kunde = get('ang-kunde') || '—';
+  const datum = get('ang-datum');
+  const datumF = datum ? new Date(datum).toLocaleDateString('de-DE',{day:'2-digit',month:'long',year:'numeric'}) : '—';
+  const personen = get('ang-preis-personen') || get('ang-personen') || '—';
+  const pp = parseFloat(get('ang-preis-pp')) || 0;
+  const fahrt = parseFloat(get('ang-fahrt')) || 0;
+  const extras = parseFloat(get('ang-extras')) || 0;
+  const gesamt = (parseFloat(personen)||0) * pp + fahrt + extras;
+  const anzahlung = parseFloat(get('ang-anzahlung')) || 0;
+  const gueltig = get('ang-gueltig');
+  const gueltigF = gueltig ? new Date(gueltig).toLocaleDateString('de-DE') : '—';
+  const sig = getSetting('cfg-signatur') || '';
+  const sName = getSetting('r-name') || '';
+
+  return `Sehr geehrte/r ${kunde},
+
+${get('ang-einleitung')}
+
+━━━ ANGEBOT ${get('ang-nr')} ━━━
+
+Veranstaltung:    ${get('ang-art')}
+Datum:            ${datumF}
+Uhrzeit:          ${get('ang-uhrzeit')} Uhr
+Ort:              ${get('ang-ort')}
+Personenanzahl:   ${personen} Personen
+Pizzasorten:      ${get('ang-pizzen')}
+${get('ang-toppings') ? 'Extras: ' + get('ang-toppings') : ''}
+
+━━━ PREISÜBERSICHT ━━━
+
+Pizza Catering (${personen} Pers. × ${pp.toFixed(2)} €): ${((parseFloat(personen)||0)*pp).toFixed(2)} €
+${fahrt > 0 ? 'Fahrtkosten: ' + fahrt.toFixed(2) + ' €\n' : ''}${extras > 0 ? get('ang-extras-desc') + ': ' + extras.toFixed(2) + ' €\n' : ''}
+Gesamtbetrag: ${gesamt.toFixed(2)} €
+${anzahlung > 0 ? 'Anzahlung: ' + anzahlung.toFixed(2) + ' €\nRestbetrag: ' + (gesamt-anzahlung).toFixed(2) + ' €' : ''}
+
+Angebot gültig bis: ${gueltigF}
+
+━━━ IM ANGEBOT ENTHALTEN ━━━
+
+${get('ang-leistungen')}
+
+${get('ang-hinweise') ? '━━━ HINWEISE ━━━\n' + get('ang-hinweise') + '\n' : ''}
+${get('ang-schluss')}
+
+${sig}`;
+}
+
+function copyAngebotText() {
+  navigator.clipboard.writeText(getAngebotText()).then(() => toast('📋 Angebotstext kopiert!'));
+}
+
+function sendAngebotMail() {
+  const get = id => (document.getElementById(id)||{}).value || '';
+  const email = get('ang-email');
+  if (!email) { toast('⚠️ Bitte E-Mail-Adresse des Kunden eingeben'); return; }
+  const datum = get('ang-datum');
+  const datumF = datum ? new Date(datum).toLocaleDateString('de-DE') : '—';
+  const subject = encodeURIComponent(`Angebot Pizza Catering — ${get('ang-art') || 'Veranstaltung'} am ${datumF}`);
+  const body = encodeURIComponent(getAngebotText());
+  window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+  toast('✉️ Mail-Programm wird geöffnet...');
+}
+
+
+function getSetting(id) {
+  return localStorage.getItem('pizzacatering_' + id) || '';
+}
+function saveSettings() {
+  ['cfg-email','cfg-name','cfg-preis','cfg-pp','cfg-min','cfg-signatur',
+   'r-name','r-zusatz','r-strasse','r-plz','r-ort-sender','r-tel','r-email','r-steuernr','r-iban'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) localStorage.setItem('pizzacatering_' + id, el.value);
+  });
+}
+function loadSettings() {
+  ['cfg-email','cfg-name','cfg-preis','cfg-pp','cfg-min','cfg-signatur',
+   'r-name','r-zusatz','r-strasse','r-plz','r-ort-sender','r-tel','r-email','r-steuernr','r-iban'].forEach(id => {
+    const el = document.getElementById(id);
+    const val = getSetting(id);
+    if (el && val) el.value = val;
+  });
+}
+
+function exportData() {
+  const data = {};
+  for (let key in localStorage) {
+    if (key.startsWith('pizzacatering_')) data[key] = localStorage[key];
+  }
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'pizza-catering-daten.json';
+  a.click();
+  toast('💾 Daten exportiert!');
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      Object.entries(data).forEach(([k,v]) => localStorage.setItem(k, v));
+      loadSettings();
+      updateInvoice();
+      toast('✅ Daten importiert!');
+    } catch { toast('⚠️ Fehler beim Importieren!'); }
+  };
+  reader.readAsText(file);
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+document.getElementById('r-datum').value = new Date().toISOString().split('T')[0];
+// Angebot: Gültig bis vorausfüllen (+14 Tage)
+const angGueltig = new Date(); angGueltig.setDate(angGueltig.getDate() + 14);
+document.getElementById('ang-gueltig').value = angGueltig.toISOString().split('T')[0];
+loadSettings();
+// Stammdaten aus Flyer vorausfüllen (nur wenn noch leer)
+if (!getSetting('r-name')) { document.getElementById('r-name').value = 'D&D Pizza-Catering'; }
+if (!getSetting('r-zusatz')) { document.getElementById('r-zusatz').value = 'Mobiles Pizza-Catering'; }
+if (!getSetting('r-tel')) { document.getElementById('r-tel').value = '0173 3064062'; }
+if (!getSetting('r-email')) { document.getElementById('r-email').value = 'dudpizza@gmx.net'; }
+if (!getSetting('cfg-email')) { document.getElementById('cfg-email').value = 'dudpizza@gmx.net'; }
+if (!getSetting('cfg-name')) { document.getElementById('cfg-name').value = 'D&D Pizza-Catering'; }
+if (!getSetting('cfg-signatur')) {
+  document.getElementById('cfg-signatur').value = 'Mit freundlichen Grüßen\nD&D Pizza-Catering\n\nTel.: 0173 3064062\nE-Mail: dudpizza@gmx.net';
+}
+calcShopping();
+updateInvoice();
+updateAngebot();
+</script>
+</body>
+</html>
