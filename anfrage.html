@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D&D Pizza-Catering – Anfrage</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8f7f5; color: #1a1816; min-height: 100vh; }
+
+.hero { background: #c0392b; padding: 2.5rem 1.5rem 3rem; text-align: center; }
+.hero-icon { font-size: 52px; margin-bottom: 0.75rem; }
+.hero h1 { color: #fff; font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+.hero p { color: rgba(255,255,255,0.85); font-size: 15px; max-width: 480px; margin: 0 auto; line-height: 1.6; }
+
+.highlights { display: flex; justify-content: center; gap: 1.5rem; padding: 1rem 1.5rem; background: #962d22; flex-wrap: wrap; }
+.highlight { color: rgba(255,255,255,0.85); font-size: 13px; }
+
+.container { max-width: 620px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+
+.card { background: #fff; border-radius: 10px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; border: 1px solid #e8e4df; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.card-title { font-size: 14px; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+.step { background: #fdf0ee; color: #c0392b; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.field { margin-bottom: 0.875rem; }
+.field:last-child { margin-bottom: 0; }
+.field label { display: block; font-size: 12px; font-weight: 600; color: #5c5750; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
+.req { color: #c0392b; }
+input, select, textarea { width: 100%; padding: 10px 12px; border: 1px solid #e8e4df; border-radius: 8px; font-size: 15px; font-family: inherit; background: #fff; color: #1a1816; transition: border-color 0.15s; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: #c0392b; box-shadow: 0 0 0 3px rgba(192,57,43,0.1); }
+textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+
+.btn-submit { background: #c0392b; color: #fff; border: none; padding: 14px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; transition: background 0.15s; }
+.btn-submit:hover { background: #962d22; }
+.hint { font-size: 12px; color: #9c9690; margin-top: 10px; text-align: center; line-height: 1.6; }
+
+.success-box { background: #edfaf2; border: 1px solid #a7f3d0; border-radius: 10px; padding: 2rem; text-align: center; display: none; }
+.success-box h2 { color: #1e8a5a; font-size: 22px; margin-bottom: 10px; }
+.success-box p { color: #2d6a4f; font-size: 14px; line-height: 1.8; }
+
+footer { text-align: center; padding: 1.5rem; font-size: 13px; color: #9c9690; border-top: 1px solid #e8e4df; }
+footer a { color: #c0392b; text-decoration: none; }
+
+@media (max-width: 580px) {
+  .grid2, .grid3 { grid-template-columns: 1fr; }
+  .highlights { gap: 0.75rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-icon">🍕</div>
+  <h1>D&D Pizza-Catering</h1>
+  <p>Lust auf echtes Pizza-Feeling bei eurem Event? Wir bringen ein Stück Italien direkt zu euch — frisch gebacken und live vor euren Gästen zubereitet.</p>
+</div>
+
+<div class="highlights">
+  <span class="highlight">🔥 Live-Cooking vor Ort</span>
+  <span class="highlight">🍕 4 Pizzasorten zur Wahl</span>
+  <span class="highlight">⏱ 2,5 Stunden Catering</span>
+  <span class="highlight">🚗 Anfahrt bis 20 km</span>
+</div>
+
+<div class="container">
+
+  <div id="success-box" class="success-box">
+    <h2>✅ Anfrage gesendet!</h2>
+    <p>Vielen Dank für Ihre Anfrage!<br>
+    Wir melden uns innerhalb von 48 Stunden bei Ihnen.<br><br>
+    <strong>D&D Pizza-Catering</strong><br>
+    Tel.: 0173 3064062<br>
+    dudpizza@gmx.net</p>
+  </div>
+
+  <div id="anfrage-form">
+
+    <div class="card">
+      <div class="card-title"><div class="step">1</div> Ihre Kontaktdaten</div>
+      <div class="grid2">
+        <div class="field">
+          <label>Vorname <span class="req">*</span></label>
+          <input type="text" id="f-vorname" placeholder="Max">
+        </div>
+        <div class="field">
+          <label>Nachname <span class="req">*</span></label>
+          <input type="text" id="f-nachname" placeholder="Mustermann">
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label>E-Mail <span class="req">*</span></label>
+          <input type="email" id="f-email" placeholder="max@beispiel.de">
+        </div>
+        <div class="field">
+          <label>Telefon</label>
+          <input type="tel" id="f-tel" placeholder="+49 171 ...">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><div class="step">2</div> Veranstaltungsdetails</div>
+      <div class="grid3">
+        <div class="field">
+          <label>Datum <span class="req">*</span></label>
+          <input type="date" id="f-datum">
+        </div>
+        <div class="field">
+          <label>Uhrzeit (Beginn)</label>
+          <input type="time" id="f-uhrzeit" value="18:00">
+        </div>
+        <div class="field">
+          <label>Personenanzahl <span class="req">*</span></label>
+          <input type="number" id="f-personen" placeholder="z.B. 50" min="1">
+        </div>
+      </div>
+      <div class="field">
+        <label>Veranstaltungsort / Adresse <span class="req">*</span></label>
+        <input type="text" id="f-ort" placeholder="Strasse, PLZ, Ort">
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label>Art der Veranstaltung</label>
+          <select id="f-art">
+            <option>Geburtstagsfeier</option>
+            <option>Firmenfeier / Betriebsfeier</option>
+            <option>Hochzeit</option>
+            <option>Stadtfest / Strassenfest</option>
+            <option>Vereinsfest</option>
+            <option>Kindergeburtstag</option>
+            <option>Schulveranstaltung</option>
+            <option>Sonstiges</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Drinnen oder Draussen?</label>
+          <select id="f-location">
+            <option>Draussen</option>
+            <option>Drinnen</option>
+            <option>Beides moeglich</option>
+            <option>Noch nicht sicher</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Wie wurden Sie auf uns aufmerksam?</label>
+        <select id="f-quelle">
+          <option>Empfehlung / Bekannte</option>
+          <option>Instagram / Facebook</option>
+          <option>Google</option>
+          <option>Flyer / Aushang</option>
+          <option>Ich kenne euch schon</option>
+          <option>Sonstiges</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><div class="step">3</div> Besondere Wuensche</div>
+      <div class="field">
+        <label>Anmerkungen / Sonderw&uuml;nsche</label>
+        <textarea id="f-anmerkungen" placeholder="Besondere Wuensche, Fragen oder alles was wir wissen sollten..."></textarea>
+      </div>
+    </div>
+
+    <div class="field">
+      <button class="btn-submit" onclick="submitAnfrage()">&#9993; Anfrage jetzt absenden</button>
+      <p class="hint">Ihre Anfrage wird direkt an D&amp;D Pizza-Catering gesendet.<br>Wir melden uns innerhalb von 48 Stunden bei Ihnen.</p>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <strong>D&amp;D Pizza-Catering</strong> &nbsp;&middot;&nbsp;
+  Tel.: <a href="tel:01733064062">0173 3064062</a> &nbsp;&middot;&nbsp;
+  <a href="mailto:dudpizza@gmx.net">dudpizza@gmx.net</a>
+</footer>
+
+<script>
+function submitAnfrage() {
+  var vorname   = document.getElementById('f-vorname').value.trim();
+  var nachname  = document.getElementById('f-nachname').value.trim();
+  var email     = document.getElementById('f-email').value.trim();
+  var tel       = document.getElementById('f-tel').value.trim();
+  var datum     = document.getElementById('f-datum').value;
+  var uhrzeit   = document.getElementById('f-uhrzeit').value;
+  var personen  = document.getElementById('f-personen').value.trim();
+  var ort       = document.getElementById('f-ort').value.trim();
+  var art       = document.getElementById('f-art').value;
+  var location  = document.getElementById('f-location').value;
+  var quelle    = document.getElementById('f-quelle').value;
+  var anmerkungen = document.getElementById('f-anmerkungen').value.trim();
+
+  if (!vorname || !nachname || !email || !datum || !personen || !ort) {
+    alert('Bitte alle Pflichtfelder ausfullen (mit * markiert).');
+    return;
+  }
+
+  var datumObj = new Date(datum);
+  var datumFormatted = datumObj.getDate() + '.' + (datumObj.getMonth()+1) + '.' + datumObj.getFullYear();
+
+  var smartBlock = '##ANFRAGE##\n'
+    + 'NAME: ' + vorname + ' ' + nachname + '\n'
+    + 'EMAIL: ' + email + '\n'
+    + 'TEL: ' + (tel || '-') + '\n'
+    + 'DATUM: ' + datum + '\n'
+    + 'UHRZEIT: ' + uhrzeit + '\n'
+    + 'PERSONEN: ' + personen + '\n'
+    + 'ORT: ' + ort + '\n'
+    + 'ART: ' + art + '\n'
+    + 'LOCATION: ' + location + '\n'
+    + 'QUELLE: ' + quelle + '\n'
+    + 'ANMERKUNGEN: ' + (anmerkungen || '-') + '\n'
+    + '##ENDE##';
+
+  var mailBody = 'Neue Catering-Anfrage:\n\n'
+    + 'Name:       ' + vorname + ' ' + nachname + '\n'
+    + 'E-Mail:     ' + email + '\n'
+    + 'Telefon:    ' + (tel || '-') + '\n\n'
+    + 'Datum:      ' + datumFormatted + '\n'
+    + 'Uhrzeit:    ' + uhrzeit + ' Uhr\n'
+    + 'Personen:   ca. ' + personen + '\n'
+    + 'Ort:        ' + ort + '\n'
+    + 'Art:        ' + art + '\n'
+    + 'Location:   ' + location + '\n'
+    + 'Quelle:     ' + quelle + '\n\n'
+    + 'Anmerkungen:\n' + (anmerkungen || '-') + '\n\n'
+    + '---\n'
+    + smartBlock;
+
+  var subject = 'Neue Anfrage: ' + art + ' am ' + datumFormatted + ' (' + personen + ' Pers.)';
+
+  window.location.href = 'mailto:dudpizza@gmx.net'
+    + '?subject=' + encodeURIComponent(subject)
+    + '&body=' + encodeURIComponent(mailBody);
+
+  setTimeout(function() {
+    document.getElementById('anfrage-form').style.display = 'none';
+    document.getElementById('success-box').style.display = 'block';
+    window.scrollTo(0, 0);
+  }, 1000);
+}
+</script>
+</body>
+</html>
